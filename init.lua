@@ -507,7 +507,7 @@ vim.keymap.set('n', '<leader>q', vim.diagnostic.setloclist, { desc = 'Open diagn
 -- Git Keymaps
 -- auto cmd to make sure the opened buffer is tracked if in git repo
 vim.api.nvim_create_autocmd({'BufEnter'}, {pattern = {'*'}, callback = require('lazygit.utils').project_root_dir})
-vim.keymap.set('n', '<leader>gg', require("telescope").extensions.lazygit.lazygit, { desc = 'Open LazyGit panel' })
+vim.keymap.set('n', '<leader>gg', '<CMD>LazyGit<CR>', { desc = 'Open LazyGit panel' })
 
 -- File Tree
 vim.keymap.set('n', '<leader>o', '<CMD>Neotree<CR>', { desc = 'Open file tree' })
