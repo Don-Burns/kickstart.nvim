@@ -509,6 +509,8 @@ vim.keymap.set('n', '<leader>q', vim.diagnostic.setloclist, { desc = 'Open diagn
 vim.api.nvim_create_autocmd({'BufEnter'}, {pattern = {'*'}, callback = require('lazygit.utils').project_root_dir})
 vim.keymap.set('n', '<leader>gg', require("telescope").extensions.lazygit.lazygit, { desc = 'Open LazyGit panel' })
 
+-- File Tree
+vim.keymap.set('n', '<leader>o', '<CMD>Neotree<CR>', { desc = 'Open file tree' })
 -- [[ Configure LSP ]]
 --  This function gets run when an LSP connects to a particular buffer.
 local on_attach = function(_, bufnr)
