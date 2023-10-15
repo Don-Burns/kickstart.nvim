@@ -502,7 +502,7 @@ end, 0)
 vim.keymap.set('n', '[d', vim.diagnostic.goto_prev, { desc = 'Go to previous diagnostic message' })
 vim.keymap.set('n', ']d', vim.diagnostic.goto_next, { desc = 'Go to next diagnostic message' })
 vim.keymap.set('n', '<leader>e', vim.diagnostic.open_float, { desc = 'Open floating diagnostic message' })
-vim.keymap.set('n', '<leader>q', vim.diagnostic.setloclist, { desc = 'Open diagnostics list' })
+vim.keymap.set('n', '<leader>dd', vim.diagnostic.setloclist, { desc = 'Open diagnostics list' })
 
 -- Git Keymaps
 -- auto cmd to make sure the opened buffer is tracked if in git repo
@@ -538,8 +538,8 @@ local on_attach = function(_, bufnr)
   nmap('gr', require('telescope.builtin').lsp_references, '[G]oto [R]eferences')
   nmap('gI', require('telescope.builtin').lsp_implementations, '[G]oto [I]mplementation')
   nmap('<leader>D', require('telescope.builtin').lsp_type_definitions, 'Type [D]efinition')
-  nmap('<leader>ds', require('telescope.builtin').lsp_document_symbols, '[D]ocument [S]ymbols')
-  nmap('<leader>ps', require('telescope.builtin').lsp_dynamic_workspace_symbols, '[P]roject [S]ymbols')
+  nmap('<leader>lsd', require('telescope.builtin').lsp_document_symbols, '[L]SP [S]ymbols [D]ocument')
+  nmap('<leader>lsp', require('telescope.builtin').lsp_dynamic_workspace_symbols, '[L]SP [S]ymbols [P]roject')
 
   -- See `:help K` for why this keymap
   nmap('K', vim.lsp.buf.hover, 'Hover Documentation')
@@ -562,7 +562,7 @@ end
 -- document existing key chains
 require('which-key').register {
   ['<leader>c'] = { name = '[C]ode', _ = 'which_key_ignore' },
-  ['<leader>d'] = { name = '[D]ocument', _ = 'which_key_ignore' },
+  ['<leader>d'] = { name = '[D]iagnostics', _ = 'which_key_ignore' },
   ['<leader>g'] = { name = '[G]it', _ = 'which_key_ignore' },
   ['<leader>h'] = { name = 'Git [H]unk', _ = 'which_key_ignore' },
   ['<leader>r'] = { name = '[R]ename', _ = 'which_key_ignore' },
@@ -737,7 +737,23 @@ require('Comment').setup({
 })
 vim.keymap.set('n', '<leader>/', function() require('Comment.api').toggle.linewise.count(vim.v.count > 0 and vim.v.count or 1) end, {desc = 'Toggle comment line'})
 vim.keymap.set('v', '<leader>/', '<esc><cmd>lua require("Comment.api").toggle.linewise(vim.fn.visualmode())<cr>', {desc = 'Toggle comment line'})
+vim.keymap.set('n', '<leader>q', '<cmd>confirm q<cr>', {desc = "Quit (:q)"})
+vim.keymap.set('n', '<C-s>', '<cmd>w!<cr>', {desc = "Force write (:w!)" })
+vim.keymap.set('n', '<C-q>', '<cmd>wqa!<cr>', {desc = "Force save and quit (:wq!)"})
+vim.keymap.set('n', '<leader>|', '<cmd>vsplit<cr>', {desc = "Vertical Split"})
+vim.keymap.set('n', '<leader>\\', '<cmd>split<cr>', {desc = "Horizontal Split"})
 
+-- load in helper files, decided not to use right now, but may be good in future
+-- for _, source in ipairs {
+  -- "custom.bootstrap",
+  -- "custom.options",
+  -- "custom.lazy",
+  -- "custom.autocmds",
+  -- "custom.mappings",
+-- } do
+--   local status_ok, fault = pcall(require, source)
+--   if not status_ok then vim.api.nvim_err_writeln("Failed to load " .. source .. "\n\n" .. fault) end
+-- end
 
 -- The line beneath this is called `modeline`. See `:help modeline`
 -- vim: ts=2 sts=2 sw=2 et
