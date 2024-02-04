@@ -41,6 +41,7 @@ return {
                     my_grey = "#ebebeb",
                     my_color = "#ffffff",
                     comment = "#32780a",
+                    white = "#ffffff",
                 },
                 astrodark = {              -- Extend or modify astrodarks palette colors
                     ui = {
@@ -56,6 +57,8 @@ return {
             },
 
             highlights = {
+                -- for list of what the available highlight categories are see: https://github.com/AstroNvim/astrotheme/blob/main/lua/astrotheme/groups/syntax.lua
+                -- May need to adjust for the commmit I am working off of
                 global = { -- Add or modify hl groups globally, theme specific hl groups take priority.
                     modify_hl_groups = function(highlight, color)
                     end,
@@ -64,8 +67,12 @@ return {
                 astrodark = {
                     -- first parameter is the highlight table and the second parameter is the color palette table
                     modify_hl_groups = function(hightlight, color) -- modify_hl_groups function allows you to modify hl groups,
+                        -- comments
                         hightlight.Comment.fg = color.comment      -- this colour is defined above in palettes
                         hightlight.Comment.italic = true
+
+                        -- variables
+                        hightlight.Identifier.fg = color.white
                     end,
                     -- ["@String"] = { fg = "#ff00ff", bg = "NONE" },
                 },
