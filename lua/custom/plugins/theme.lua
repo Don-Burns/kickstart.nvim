@@ -1,54 +1,74 @@
 return {
-    "catppuccin/nvim",
-    name = "catppuccin",
+    "AstroNvim/astrotheme",
     lazy = false,
     priority = 1000,
     config = function()
-        local theme = require("catppuccin")
+        local theme = require("astrotheme")
         theme.setup({
-            flavour = "mocha", -- latte, frappe, macchiato, mocha
-            background = {     -- :h background
-                light = "latte",
-                dark = "mocha",
+            palette = "astrodark", -- String of the default palette to use when calling `:colorscheme astrotheme`
+            background = {         -- :h background, palettes to use when using the core vim background colors
+                light = "astrolight",
+                dark = "astrodark",
             },
-            transparent_background = false, -- disables setting the background color.
-            show_end_of_buffer = false,     -- shows the '~' characters after the end of buffers
-            term_colors = false,            -- sets terminal colors (e.g. `g:terminal_color_0`)
-            dim_inactive = {
-                enabled = false,            -- dims the background color of inactive window
-                shade = "dark",
-                percentage = 0.15,          -- percentage of the shade to apply to the inactive window
+
+            style = {
+                transparent = false,         -- Bool value, toggles transparency.
+                inactive = true,             -- Bool value, toggles inactive window color.
+                float = true,                -- Bool value, toggles floating windows background colors.
+                neotree = true,              -- Bool value, toggles neo-trees background color.
+                border = true,               -- Bool value, toggles borders.
+                title_invert = true,         -- Bool value, swaps text and background colors.
+                italic_comments = true,      -- Bool value, toggles italic comments.
+                simple_syntax_colors = true, -- Bool value, simplifies the amounts of colors used for syntax highlighting.
             },
-            no_italic = false,              -- Force no italic
-            no_bold = false,                -- Force no bold
-            no_underline = false,           -- Force no underline
-            styles = {                      -- Handles the styles of general hi groups (see `:h highlight-args`):
-                comments = { "italic" },    -- Change the style of comments
-                conditionals = { "italic" },
-                loops = {},
-                functions = {},
-                keywords = {},
-                strings = {},
-                variables = {},
-                numbers = {},
-                booleans = {},
-                properties = {},
-                types = {},
-                operators = {},
+
+
+            termguicolors = true,    -- Bool value, toggles if termguicolors are set by AstroTheme.
+
+            terminal_color = true,   -- Bool value, toggles if terminal_colors are set by AstroTheme.
+
+            plugin_default = "auto", -- Sets how all plugins will be loaded
+            -- "auto": Uses lazy / packer enabled plugins to load highlights.
+            -- true: Enables all plugins highlights.
+            -- false: Disables all plugins.
+
+            plugins = { -- Allows for individual plugin overrides using plugin name and value from above.
+                ["bufferline.nvim"] = false,
             },
-            color_overrides = {},
-            custom_highlights = {},
-            integrations = {
-                cmp = true,
-                gitsigns = true,
-                nvimtree = true,
-                treesitter = true,
-                notify = false,
-                mini = {
-                    enabled = true,
-                    indentscope_color = "",
+
+            palettes = {
+                global = { -- Globally accessible palettes, theme palettes take priority.
+                    my_grey = "#ebebeb",
+                    my_color = "#ffffff",
+                    comment = "#32780a",
                 },
-                -- For more plugins integrations please scroll down (https://github.com/catppuccin/nvim#integrations)
+                astrodark = {              -- Extend or modify astrodarks palette colors
+                    ui = {
+                        red = "#800010",   -- Overrides astrodarks red UI color
+                        accent = "#CC83E3" -- Changes the accent color of astrodark.
+                    },
+                    syntax = {
+                        cyan = "#800010",    -- Overrides astrodarks cyan syntax color
+                        comments = "#CC83E3" -- Overrides astrodarks comment color.
+                    },
+                    my_color = "#000000"     -- Overrides global.my_color
+                },
+            },
+
+            highlights = {
+                global = { -- Add or modify hl groups globally, theme specific hl groups take priority.
+                    modify_hl_groups = function(highlight, color)
+                    end,
+                    -- ["@String"] = { fg = "#ff00ff", bg = "NONE" },
+                },
+                astrodark = {
+                    -- first parameter is the highlight table and the second parameter is the color palette table
+                    modify_hl_groups = function(hightlight, color) -- modify_hl_groups function allows you to modify hl groups,
+                        hightlight.Comment.fg = color.comment      -- this colour is defined above in palettes
+                        hightlight.Comment.italic = true
+                    end,
+                    -- ["@String"] = { fg = "#ff00ff", bg = "NONE" },
+                },
             },
         })
         theme.load()
