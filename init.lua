@@ -38,12 +38,9 @@ I hope you enjoy your Neovim journey,
 P.S. You can delete this when you're done too. It's your config now :)
 --]]
 
--- Set <space> as the leader key
--- See `:help mapleader`
---  NOTE: Must happen before plugins are required (otherwise wrong leader will be used)
-vim.g.mapleader = " "
-vim.g.maplocalleader = " "
+require("custom.vim").apply_options()
 
+-- pull in vim options
 -- [[ Install `lazy.nvim` plugin manager ]]
 --    https://github.com/folke/lazy.nvim
 --    `:help lazy.nvim.txt` for more info
@@ -529,7 +526,7 @@ local on_attach = function(_, bufnr)
     vim.keymap.set("n", keys, func, { buffer = bufnr, desc = desc })
   end
 
-  nmap("<leader>rn", vim.lsp.buf.rename, "[R]e[n]ame")
+  nmap("<leader>lr", vim.lsp.buf.rename, "[L]sp [R]ename")
   nmap("<leader>la", function()
     vim.lsp.buf.code_action { context = { only = { "quickfix", "refactor", "source" } } }
   end, "[L]sp [A]ction")
@@ -571,6 +568,8 @@ require("which-key").register {
   ["<leader>w"] = { name = "[W]orkspace", _ = "which_key_ignore" },
   ["<leader>f"] = { name = "[F]ind", _ = "which_key_ignore" },
   ["<leader>p"] = { name = "[P]roject", _ = "which_key_ignore" },
+  ["<leader>l"] = { name = "[L]sp", _ = "which_key_ignore" },
+  ["<leader>ls"] = { name = "[L]sp [S]ymbols", _ = "which_key_ignore" },
 }
 -- register which-key VISUAL mode
 -- required for visual <leader>hs (hunk stage) to work
@@ -597,8 +596,19 @@ local servers = {
   -- go
   gopls = {},
   -- python
-  -- pyright = {},
-  ruff_lsp = {},
+  -- ruff doesn't give docs on hover or code completion so use jedi for that
+  jedi_language_server = {
+    init_options = {
+      completion = {
+        disableSnippets = true,
+      }
+    }
+  },
+  ruff_lsp = {
+    -- on_attach = function(client, _)
+    -- client.server_capabilities.hoverProvider = false
+    -- end,
+  },
   -- rust
   rust_analyzer = {},
   -- js/ts
