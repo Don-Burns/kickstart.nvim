@@ -39,6 +39,9 @@ P.S. You can delete this when you're done too. It's your config now :)
 --]]
 
 require("custom.vim").apply_options()
+-- add binds without plugin dep in case I break config =P
+local keybinds = require("custom.keybinds")
+keybinds.setup_vim_binds()
 
 -- pull in vim options
 -- [[ Install `lazy.nvim` plugin manager ]]
@@ -92,25 +95,8 @@ require("lazy").setup({
     },
   },
 
-  {
-    -- Autocompletion
-    "hrsh7th/nvim-cmp",
-    dependencies = {
-      -- Snippet Engine & its associated nvim-cmp source
-      "L3MON4D3/LuaSnip",
-      "saadparwaiz1/cmp_luasnip",
-
-      -- Adds LSP completion capabilities
-      "hrsh7th/cmp-nvim-lsp",
-      "hrsh7th/cmp-path",
-
-      -- Adds a number of user-friendly snippets
-      -- "rafamadriz/friendly-snippets",
-    },
-  },
-
   -- Useful plugin to show you pending keybinds.
-  { "folke/which-key.nvim",  opts = {} },
+  { "folke/which-key.nvim",   opts = {} },
   {
     -- Adds git related signs to the gutter, as well as utilities for managing changes
     "lewis6991/gitsigns.nvim",
@@ -186,7 +172,6 @@ require("lazy").setup({
     },
   },
 
-
   {
     -- Add indentation guides even on blank lines
     "lukas-reineke/indent-blankline.nvim",
@@ -196,8 +181,6 @@ require("lazy").setup({
     opts = {},
   },
 
-  -- "gc" to comment visual regions/lines
-  { "numToStr/Comment.nvim", opts = {} },
 
   -- Fuzzy Finder (files, lsp, etc)
   {
@@ -244,21 +227,8 @@ require("lazy").setup({
   { import = "custom.plugins" },
 }, {})
 
--- [[ Basic Keymaps ]]
-
--- Keymaps for better default experience
--- See `:help vim.keymap.set()`
-vim.keymap.set({ "n", "v" }, "<Space>", "<Nop>", { silent = true })
-
--- Remap for dealing with word wrap
-vim.keymap.set("n", "k", "v:count == 0 ? 'gk' : 'k'", { expr = true, silent = true })
-vim.keymap.set("n", "j", "v:count == 0 ? 'gj' : 'j'", { expr = true, silent = true })
-
--- Diagnostic keymaps
-vim.keymap.set("n", "[d", vim.diagnostic.goto_prev, { desc = "Go to previous diagnostic message" })
-vim.keymap.set("n", "]d", vim.diagnostic.goto_next, { desc = "Go to next diagnostic message" })
-vim.keymap.set("n", "<leader>e", vim.diagnostic.open_float, { desc = "Open floating diagnostic message" })
-vim.keymap.set("n", "<leader>q", vim.diagnostic.setloclist, { desc = "Open diagnostics list" })
+-- add plugin binds now that they are installed
+keybinds.setup_plugin_binds()
 
 -- [[ Highlight on yank ]]
 -- See `:help vim.highlight.on_yank()`
@@ -443,72 +413,8 @@ vim.keymap.set("n", "<leader>o", "<CMD>Neotree<CR>", { desc = "Open file tree" }
 
 -- [[ Configure LSP ]]
 --  This function gets run when an LSP connects to a particular buffer.
-local on_attach = function(_, bufnr)
-  -- NOTE: Remember that lua is a real programming language, and as such it is possible
-  -- to define small helper and utility functions so you don't have to repeat yourself
-  -- many times.
-  --
-  -- In this case, we create a function that lets us more easily define mappings specific
-  -- for LSP related items. It sets the mode, buffer and description for us each time.
-  local nmap = function(keys, func, desc)
-    if desc then
-      desc = "LSP: " .. desc
-    end
+local on_attach = keybinds.lsp_on_attach_binds
 
-    vim.keymap.set("n", keys, func, { buffer = bufnr, desc = desc })
-  end
-
-  nmap("<leader>lr", vim.lsp.buf.rename, "[L]sp [R]ename")
-  nmap("<leader>la", function()
-    vim.lsp.buf.code_action { context = { only = { "quickfix", "refactor", "source" } } }
-  end, "[L]sp [A]ction")
-
-  nmap("gd", require("telescope.builtin").lsp_definitions, "[G]oto [D]efinition")
-  nmap("gr", require("telescope.builtin").lsp_references, "[G]oto [R]eferences")
-  nmap("gI", require("telescope.builtin").lsp_implementations, "[G]oto [I]mplementation")
-  nmap("<leader>D", require("telescope.builtin").lsp_type_definitions, "Type [D]efinition")
-  nmap("<leader>lsd", require("telescope.builtin").lsp_document_symbols, "[L]SP [S]ymbols [D]ocument")
-  nmap("<leader>lsp", require("telescope.builtin").lsp_dynamic_workspace_symbols, "[L]SP [S]ymbols [P]roject")
-
-  -- See `:help K` for why this keymap
-  nmap("K", vim.lsp.buf.hover, "Hover Documentation")
-  nmap("<C-k>", vim.lsp.buf.signature_help, "Signature Documentation")
-
-  -- Lesser used LSP functionality
-  nmap("gD", vim.lsp.buf.declaration, "[G]oto [D]eclaration")
-  nmap("<leader>pa", vim.lsp.buf.add_workspace_folder, "[P]roject [A]dd Folder")
-  nmap("<leader>pr", vim.lsp.buf.remove_workspace_folder, "[P]roject [R]emove Folder")
-  nmap("<leader>pl", function()
-    print(vim.inspect(vim.lsp.buf.list_workspace_folders()))
-  end, "[P]roject [L]ist Folders")
-
-  -- Create a command `:Format` local to the LSP buffer
-  vim.api.nvim_buf_create_user_command(bufnr, "Format", function(_)
-    vim.lsp.buf.format()
-  end, { desc = "Format current buffer with LSP" })
-end
-
--- document existing key chains
-require("which-key").register {
-  ["<leader>c"] = { name = "[C]ode", _ = "which_key_ignore" },
-  ["<leader>d"] = { name = "[D]iagnostics", _ = "which_key_ignore" },
-  ["<leader>g"] = { name = "[G]it", _ = "which_key_ignore" },
-  ["<leader>h"] = { name = "Git [H]unk", _ = "which_key_ignore" },
-  ["<leader>r"] = { name = "[R]ename", _ = "which_key_ignore" },
-  ["<leader>s"] = { name = "[S]earch", _ = "which_key_ignore" },
-  ["<leader>t"] = { name = "[T]oggle", _ = "which_key_ignore" },
-  ["<leader>w"] = { name = "[W]orkspace", _ = "which_key_ignore" },
-  ["<leader>f"] = { name = "[F]ind", _ = "which_key_ignore" },
-  ["<leader>p"] = { name = "[P]roject", _ = "which_key_ignore" },
-  ["<leader>l"] = { name = "[L]sp", _ = "which_key_ignore" },
-  ["<leader>ls"] = { name = "[L]sp [S]ymbols", _ = "which_key_ignore" },
-}
--- register which-key VISUAL mode
--- required for visual <leader>hs (hunk stage) to work
-require("which-key").register({
-  ["<leader>"] = { name = "VISUAL <leader>" },
-  ["<leader>h"] = { "Git [H]unk" },
-}, { mode = "v" })
 
 -- mason-lspconfig requires that these setup functions are called in this order
 -- before setting up the servers.
@@ -635,63 +541,6 @@ cmp.setup {
     { name = "path" },
   },
 }
-
-
-
--- Other Keymaps
-vim.keymap.set("n", "<leader>w", "<cmd>w<cr>", { desc = "Save file" })
--- commenting
-require("Comment").setup({
-  ---Add a space b/w comment and the line
-  padding = true,
-  ---Whether the cursor should stay at its position
-  sticky = true,
-  ---Lines to be ignored while (un)comment
-  ignore = nil,
-  ---LHS of toggle mappings in NORMAL mode
-  toggler = {
-    ---Line-comment toggle keymap
-    line = "gcc",
-    ---Block-comment toggle keymap
-    block = "gbc",
-  },
-  ---LHS of operator-pending mappings in NORMAL and VISUAL mode
-  opleader = {
-    ---Line-comment keymap
-    line = "gc",
-    ---Block-comment keymap
-    block = "gb",
-  },
-  ---LHS of extra mappings
-  extra = {
-    ---Add comment on the line above
-    above = "gcO",
-    ---Add comment on the line below
-    below = "gco",
-    ---Add comment at the end of line
-    eol = "gcA",
-  },
-  ---Enable keybindings
-  ---NOTE: If given `false` then the plugin won't create any mappings
-  mappings = {
-    ---Operator-pending mapping; `gcc` `gbc` `gc[count]{motion}` `gb[count]{motion}`
-    basic = true,
-    ---Extra mapping; `gco`, `gcO`, `gcA`
-    extra = true,
-  },
-  ---Function to call before (un)comment
-  pre_hook = nil,
-  ---Function to call after (un)comment
-  post_hook = nil,
-})
-comment_line = function() require("Comment.api").toggle.linewise.count(vim.v.count > 0 and vim.v.count or 1) end
-vim.keymap.set("n", "<leader>/", comment_line, { desc = "Toggle comment line" })
--- vim.keymap.set('n', '<C-/>', comment_line, { desc = 'Toggle comment line' })
-vim.keymap.set("n", "<leader>q", "<cmd>confirm q<cr>", { desc = "Quit (:q)" })
-vim.keymap.set("n", "<C-s>", "<cmd>w!<cr>", { desc = "Force write (:w!)" })
-vim.keymap.set("n", "<C-q>", "<cmd>wqa!<cr>", { desc = "Force save and quit (:wq!)" })
-vim.keymap.set("n", "<leader>|", "<cmd>vsplit<cr>", { desc = "Vertical Split" })
-vim.keymap.set("n", "<leader>\\", "<cmd>split<cr>", { desc = "Horizontal Split" })
 
 -- load in helper files, decided not to use right now, but may be good in future
 -- for _, source in ipairs {
