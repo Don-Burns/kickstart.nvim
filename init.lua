@@ -105,7 +105,7 @@ require("lazy").setup({
       "hrsh7th/cmp-path",
 
       -- Adds a number of user-friendly snippets
-      "rafamadriz/friendly-snippets",
+      -- "rafamadriz/friendly-snippets",
     },
   },
 
