@@ -21,6 +21,14 @@ return {
 
         -- File save
         vim.keymap.set("n", "<leader>w", "<cmd>w<cr>", { desc = "Save file" })
+
+
+        -- Buffer/Panel handling
+        vim.keymap.set("n", "<leader>q", "<cmd>confirm q<cr>", { desc = "Quit (:q)" })
+        vim.keymap.set("n", "<C-s>", "<cmd>w!<cr>", { desc = "Force write (:w!)" })
+        vim.keymap.set("n", "<C-Q>", "<cmd>wqa!<cr>", { desc = "Force save and quit (:wq!)" })
+        vim.keymap.set("n", "<leader>|", "<cmd>vsplit<cr>", { desc = "Vertical Split" })
+        vim.keymap.set("n", "<leader>\\", "<cmd>split<cr>", { desc = "Horizontal Split" })
     end,
     -- binds that rely on plugins so cannot be called before plugin install and other init setup
     setup_plugin_binds = function()
@@ -92,11 +100,6 @@ return {
         local comment_line = function() require("Comment.api").toggle.linewise.count(vim.v.count > 0 and vim.v.count or 1) end
         vim.keymap.set("n", "<leader>/", comment_line, { desc = "Toggle comment line" })
         -- vim.keymap.set('n', '<C-/>', comment_line, { desc = 'Toggle comment line' })
-        vim.keymap.set("n", "<leader>q", "<cmd>confirm q<cr>", { desc = "Quit (:q)" })
-        vim.keymap.set("n", "<C-s>", "<cmd>w!<cr>", { desc = "Force write (:w!)" })
-        vim.keymap.set("n", "<C-q>", "<cmd>wqa!<cr>", { desc = "Force save and quit (:wq!)" })
-        vim.keymap.set("n", "<leader>|", "<cmd>vsplit<cr>", { desc = "Vertical Split" })
-        vim.keymap.set("n", "<leader>\\", "<cmd>split<cr>", { desc = "Horizontal Split" })
 
         -- Todo keymaps
         vim.keymap.set("n", "<leader>pt", "<cmd>TodoTelescope<cr>", { desc = "[P]roject [T]odo List" })
