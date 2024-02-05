@@ -30,7 +30,7 @@ return {
             ["<leader>c"] = { name = "[C]ode", _ = "which_key_ignore" },
             ["<leader>d"] = { name = "[D]iagnostics", _ = "which_key_ignore" },
             ["<leader>g"] = { name = "[G]it", _ = "which_key_ignore" },
-            ["<leader>h"] = { name = "Git [H]unk", _ = "which_key_ignore" },
+            ["<leader>h"] = { name = "[H]arpoon/Git [H]unk", _ = "which_key_ignore" },
             ["<leader>r"] = { name = "[R]ename", _ = "which_key_ignore" },
             ["<leader>s"] = { name = "[S]earch", _ = "which_key_ignore" },
             ["<leader>t"] = { name = "[T]oggle", _ = "which_key_ignore" },
@@ -100,6 +100,19 @@ return {
 
         -- Todo keymaps
         vim.keymap.set("n", "<leader>pt", "<cmd>TodoTelescope<cr>", { desc = "[P]roject [T]odo List" })
+
+        -- Harpoon keymaps
+        local harpoon = require("harpoon")
+        vim.keymap.set("n", "<leader>ha", function() harpoon:list():append() end, { desc = "[H]arpoon [A]dd" })
+        vim.keymap.set("n", "<leader>hl", function() harpoon.ui:toggle_quick_menu(harpoon:list()) end,
+            { desc = "[H]arpoon [L]ist" })
+        vim.keymap.set("n", "<leader>1", function() harpoon:list():select(1) end, { desc = "Harpoon Item 1" })
+        vim.keymap.set("n", "<leader>2", function() harpoon:list():select(2) end, { desc = "Harpoon Item 2" })
+        vim.keymap.set("n", "<leader>3", function() harpoon:list():select(3) end, { desc = "Harpoon Item 3" })
+        vim.keymap.set("n", "<leader>4", function() harpoon:list():select(4) end, { desc = "Harpoon Item 4" })
+        -- Toggle previous & next buffers stored within Harpoon list
+        vim.keymap.set("n", "<C-p>", function() harpoon:list():prev() end, { desc = "Harpoon Previous" })
+        vim.keymap.set("n", "<C-n>", function() harpoon:list():next() end, { desc = "Harpoon Next" })
     end,
     -- on attach function that can be passed to lsps so binds are set when LSP attaches to buffer
     lsp_on_attach_binds = function(_, bufnr)
