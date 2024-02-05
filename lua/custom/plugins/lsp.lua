@@ -2,6 +2,12 @@
 return {
     -- community null ls package for non-lsp progs like mypy
     "nvimtools/none-ls.nvim",
+
+    dependencies = {
+        -- Installs the needed programs with mason
+        "williamboman/mason.nvim",
+        "jay-babu/mason-null-ls.nvim",
+    },
     config = function()
         local null_ls = require("null-ls")
 
@@ -14,6 +20,10 @@ return {
             should_attach = function(bufnr)
                 return not vim.api.nvim_buf_get_name(bufnr):match("^git://")
             end,
+        })
+        require("mason-null-ls").setup({
+            ensure_installed = nil,
+            automatic_installation = true,
         })
     end
 }
