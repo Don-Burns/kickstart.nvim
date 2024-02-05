@@ -17,7 +17,7 @@ return {
         vim.keymap.set("n", "[d", vim.diagnostic.goto_prev, { desc = "Go to previous diagnostic message" })
         vim.keymap.set("n", "]d", vim.diagnostic.goto_next, { desc = "Go to next diagnostic message" })
         vim.keymap.set("n", "<leader>e", vim.diagnostic.open_float, { desc = "Open floating diagnostic message" })
-        vim.keymap.set("n", "<leader>q", vim.diagnostic.setloclist, { desc = "Open diagnostics list" })
+        vim.keymap.set("n", "<leader>dd", vim.diagnostic.setloclist, { desc = "Open diagnostics list" })
 
         -- File save
         vim.keymap.set("n", "<leader>w", "<cmd>w<cr>", { desc = "Save file" })
@@ -34,9 +34,10 @@ return {
             ["<leader>r"] = { name = "[R]ename", _ = "which_key_ignore" },
             ["<leader>s"] = { name = "[S]earch", _ = "which_key_ignore" },
             ["<leader>t"] = { name = "[T]oggle", _ = "which_key_ignore" },
-            ["<leader>w"] = { name = "[W]orkspace", _ = "which_key_ignore" },
             ["<leader>f"] = { name = "[F]ind", _ = "which_key_ignore" },
-            ["<leader>ls"] = { name = "[L]sp [S]ymbols", _ = "which_key_ignore" },
+            ["<leader>l"] = { name = "[L]sp", _ = "which_key_ignore" },
+            ["<leader>ls"] = { name = "[L]sp [S]symbols", _ = "which_key_ignore" },
+            ["<leader>p"] = { name = "[P]roject", _ = "which_key_ignore" },
         }
         -- register which-key VISUAL mode
         -- required for visual <leader>hs (hunk stage) to work
@@ -96,6 +97,9 @@ return {
         vim.keymap.set("n", "<C-q>", "<cmd>wqa!<cr>", { desc = "Force save and quit (:wq!)" })
         vim.keymap.set("n", "<leader>|", "<cmd>vsplit<cr>", { desc = "Vertical Split" })
         vim.keymap.set("n", "<leader>\\", "<cmd>split<cr>", { desc = "Horizontal Split" })
+
+        -- Todo keymaps
+        vim.keymap.set("n", "<leader>pt", "<cmd>TodoTelescope<cr>", { desc = "[P]roject [T]odo List" })
     end,
     -- on attach function that can be passed to lsps so binds are set when LSP attaches to buffer
     lsp_on_attach_binds = function(_, bufnr)
@@ -122,8 +126,8 @@ return {
         nmap("gr", require("telescope.builtin").lsp_references, "[G]oto [R]eferences")
         nmap("gI", require("telescope.builtin").lsp_implementations, "[G]oto [I]mplementation")
         nmap("<leader>D", require("telescope.builtin").lsp_type_definitions, "Type [D]efinition")
-        nmap("<leader>lsd", require("telescope.builtin").lsp_document_symbols, "[L]SP [S]ymbols [D]ocument")
-        nmap("<leader>lsp", require("telescope.builtin").lsp_dynamic_workspace_symbols, "[L]SP [S]ymbols [P]roject")
+        nmap("<leader>lsd", require("telescope.builtin").lsp_document_symbols, "[L]SP [S]symbols [D]ocument")
+        nmap("<leader>lsp", require("telescope.builtin").lsp_dynamic_workspace_symbols, "[L]SP [S]symbols [P]roject")
 
         -- See `:help K` for why this keymap
         nmap("K", vim.lsp.buf.hover, "Hover Documentation")
@@ -137,9 +141,12 @@ return {
             print(vim.inspect(vim.lsp.buf.list_workspace_folders()))
         end, "[P]roject [L]ist Folders")
 
+        -- Formatting Keybinds
         -- Create a command `:Format` local to the LSP buffer
         vim.api.nvim_buf_create_user_command(bufnr, "Format", function(_)
             vim.lsp.buf.format()
         end, { desc = "Format current buffer with LSP" })
+        nmap("<leader>lf", "<cmd>:Format<cr>", "[F]ormat Current Buffer")
+        nmap("<leader>tf", "<cmd>:ToggleAutoFormat<cr>", "[T]oggle Auto [F]ormat")
     end,
 }
