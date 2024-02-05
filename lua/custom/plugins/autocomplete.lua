@@ -41,10 +41,14 @@ return {
                     select = true,
                 },
                 ["<Tab>"] = cmp.mapping(function(fallback)
+                    -- help it play nice with copilot
+                    local copilot_keys = vim.fn["copilot#Accept"]()
                     if cmp.visible() then
                         cmp.select_next_item()
                     elseif luasnip.expand_or_locally_jumpable() then
                         luasnip.expand_or_jump()
+                    elseif copilot_keys ~= "" and type(copilot_keys) == "string" then
+                        vim.api.nvim_feedkeys(copilot_keys, "i", true)
                     else
                         fallback()
                     end
