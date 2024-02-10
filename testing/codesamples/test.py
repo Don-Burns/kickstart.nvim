@@ -6,11 +6,14 @@ TOP_LEVEL_CONSTANT = 1
 
 
 class myClass:
-    def __init__(self):
+    def bar(self) -> int:
+        ...
+
+    def foo(self):
         ...
 
 
-def main() -> None:
+def main() -> int:
     """ """
     variable: int = 123
     dictionary = {
@@ -81,6 +84,8 @@ def main() -> None:
         "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
         """""" """""" """""" """""" """""" """""",
     ]
+
+    return None
 
 
 if __name__ == "__main__":

@@ -11,19 +11,21 @@ return {
     },
     config = function()
         local null_ls = require("null-ls")
-        local cpell = require("cspell")
+        local cspell = require("cspell")
 
         null_ls.setup({
             sources = {
-                null_ls.builtins.diagnostics.mypy,
+                null_ls.builtins.diagnostics.mypy.with({
+                    extra_args = { "--strict" },
+                }),
                 -- spelling diagnostics and code actions
-                cpell.diagnostics.with({
+                cspell.diagnostics.with({
                     -- change level of the diagnostic
                     diagnostics_postprocess = function(diagnostic)
                         diagnostic.severity = vim.diagnostic.severity.INFO
                     end
                 }),
-                cpell.code_actions,
+                cspell.code_actions,
             },
             -- determine if none-ls should run on current buffer
             should_attach = function(bufnr)
