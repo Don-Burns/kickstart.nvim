@@ -38,21 +38,23 @@ return {
 
             palettes = {
                 global = { -- Globally accessible palettes, theme palettes take priority.
-                    my_grey = "#ebebeb",
-                    my_color = "#ffffff",
-                    comment = "#32780a",
-                    white = "#ffffff",
+                    constants = "#0A7FFF",
+                    comments = "#32780a",
+                    identifiers = "#FFFFFF",
+                    classes = "#05BA8C",
+                    functions = "#FFC50A",
+                    numbers = "#5135E2",
+                    strings = "#B42233",
+                    error = "#F40000",
                 },
                 astrodark = {               -- Extend or modify astrodarks palette colors
                     ui = {
-                        red = "#F40000",    -- Overrides astrodarks red UI color e.g. error messages
+                        red = "#F40000",    -- Overrides astrodarks red UI color e.g. error messages in lsp
                         accent = "#CC83E3", -- Changes the accent color
-                        base = "#000000",   -- Changes the base/main background color
+                        base = "#06021A",   -- Changes the base/main background color
                     },
                     syntax = {
-                        red = "#F40000", -- Overrides astrodarks red syntax color
-                        -- cyan = "#800010",    -- Overrides astrodarks cyan syntax color
-                        -- comments = "#32780a" -- Overrides astrodarks comment color.
+                        -- see modify_hl_groups function below
                     },
                     -- my_color = "#000000", -- Overrides global.my_color
 
@@ -70,12 +72,30 @@ return {
                 astrodark = {
                     -- first parameter is the highlight table and the second parameter is the color palette table
                     modify_hl_groups = function(highlight, color) -- modify_hl_groups function allows you to modify hl groups,
-                        -- comments
-                        highlight.Comment.fg = color.comment      -- this colour is defined above in palettes
+                        -- Comments
+                        highlight.Comment.fg = color.comments     -- this colour is defined above in palettes
                         highlight.Comment.italic = true
 
-                        -- variables
-                        highlight.Identifier.fg = color.white
+                        -- Variables
+                        highlight.Identifier.fg = color.identifiers
+
+                        -- Constants
+                        highlight.Constant.fg = color.constants
+
+                        -- Functions
+                        highlight.Function.fg = color.functions
+
+                        -- Classes/Structs
+                        highlight.Structure.fg = color.classes
+                        highlight.Type.fg = color.classes
+                        highlight.Typedef.fg = color.classes
+                        highlight.StorageClass.fg = color.classes
+
+                        -- Numbers/Ints
+                        highlight.Number.fg = color.numbers
+
+                        -- Strings
+                        highlight.String.fg = color.strings
                     end,
                     -- ["@String"] = { fg = "#ff00ff", bg = "NONE" },
                 },
