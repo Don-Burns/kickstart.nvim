@@ -135,7 +135,10 @@ return {
 
         nmap("<leader>lr", vim.lsp.buf.rename, "[L]sp [R]ename")
         nmap("<leader>la", function()
-            vim.lsp.buf.code_action { context = { only = { "quickfix", "refactor", "source" } } }
+            vim.lsp.buf.code_action {
+                -- context = { only = { "quickfix", "refactor", "source" } } -- this line was in kickstart, but it may
+                -- not be needed and causes some lsps to not show actions, e.g. null-ls with cspell
+            }
         end, "[L]sp [A]ction")
 
         nmap("gd", require("telescope.builtin").lsp_definitions, "[G]oto [D]efinition")
