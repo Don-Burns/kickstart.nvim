@@ -434,6 +434,8 @@ local servers = {
     },
   },
   sqlls = {},
+  yamlls = { redhat = { telemetry = { enable = false } } },
+  jsonls = {},
 }
 
 -- Setup neovim lua configuration
