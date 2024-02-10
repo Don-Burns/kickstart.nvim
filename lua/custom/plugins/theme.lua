@@ -43,22 +43,25 @@ return {
                     comment = "#32780a",
                     white = "#ffffff",
                 },
-                astrodark = {              -- Extend or modify astrodarks palette colors
+                astrodark = {               -- Extend or modify astrodarks palette colors
                     ui = {
-                        red = "#800010",   -- Overrides astrodarks red UI color
-                        accent = "#CC83E3" -- Changes the accent color of astrodark.
+                        red = "#F40000",    -- Overrides astrodarks red UI color e.g. error messages
+                        accent = "#CC83E3", -- Changes the accent color
+                        base = "#000000",   -- Changes the base/main background color
                     },
                     syntax = {
-                        cyan = "#800010",    -- Overrides astrodarks cyan syntax color
-                        comments = "#CC83E3" -- Overrides astrodarks comment color.
+                        red = "#F40000", -- Overrides astrodarks red syntax color
+                        -- cyan = "#800010",    -- Overrides astrodarks cyan syntax color
+                        -- comments = "#32780a" -- Overrides astrodarks comment color.
                     },
-                    my_color = "#000000"     -- Overrides global.my_color
+                    -- my_color = "#000000", -- Overrides global.my_color
+
                 },
             },
 
             highlights = {
                 -- for list of what the available highlight categories are see: https://github.com/AstroNvim/astrotheme/blob/main/lua/astrotheme/groups/syntax.lua
-                -- May need to adjust for the commmit I am working off of
+                -- May need to adjust for the commit I am working off of
                 global = { -- Add or modify hl groups globally, theme specific hl groups take priority.
                     modify_hl_groups = function(highlight, color)
                     end,
@@ -66,13 +69,13 @@ return {
                 },
                 astrodark = {
                     -- first parameter is the highlight table and the second parameter is the color palette table
-                    modify_hl_groups = function(hightlight, color) -- modify_hl_groups function allows you to modify hl groups,
+                    modify_hl_groups = function(highlight, color) -- modify_hl_groups function allows you to modify hl groups,
                         -- comments
-                        hightlight.Comment.fg = color.comment      -- this colour is defined above in palettes
-                        hightlight.Comment.italic = true
+                        highlight.Comment.fg = color.comment      -- this colour is defined above in palettes
+                        highlight.Comment.italic = true
 
                         -- variables
-                        hightlight.Identifier.fg = color.white
+                        highlight.Identifier.fg = color.white
                     end,
                     -- ["@String"] = { fg = "#ff00ff", bg = "NONE" },
                 },
