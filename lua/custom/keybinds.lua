@@ -39,11 +39,12 @@ return {
             ["<leader>d"] = { name = "[D]iagnostics", _ = "which_key_ignore" },
             ["<leader>g"] = { name = "[G]it", _ = "which_key_ignore" },
             ["<leader>h"] = { name = "[H]arpoon/Git [H]unk", _ = "which_key_ignore" },
-            ["<leader>r"] = { name = "[R]ename", _ = "which_key_ignore" },
             ["<leader>s"] = { name = "[S]earch", _ = "which_key_ignore" },
             ["<leader>t"] = { name = "[T]oggle", _ = "which_key_ignore" },
             ["<leader>f"] = { name = "[F]ind", _ = "which_key_ignore" },
             ["<leader>l"] = { name = "[L]sp", _ = "which_key_ignore" },
+            ["<leader>r"] = { name = "[R]efactor", _ = "which_key_ignore" },
+            ["<leader>ri"] = { name = "[R]efactor [I]nline", _ = "which_key_ignore" },
             ["<leader>ls"] = { name = "[L]sp [S]symbols", _ = "which_key_ignore" },
             ["<leader>p"] = { name = "[P]roject", _ = "which_key_ignore" },
         }
@@ -132,21 +133,53 @@ return {
 
             vim.keymap.set("n", keys, func, { buffer = bufnr, desc = desc })
         end
+        local map = function(mode, keys, func, desc)
+            if desc then
+                desc = "LSP: " .. desc
+            end
 
-        nmap("<leader>lr", vim.lsp.buf.rename, "[L]sp [R]ename")
-        nmap("<leader>la", function()
+            vim.keymap.set(mode, keys, func, { buffer = bufnr, desc = desc })
+        end
+
+        local trigger_code_action = function()
             vim.lsp.buf.code_action {
                 -- context = { only = { "quickfix", "refactor", "source" } } -- this line was in kickstart, but it may
                 -- not be needed and causes some lsps to not show actions, e.g. null-ls with cspell
             }
-        end, "[L]sp [A]ction")
+        end
+        -- refactors
+        -- load refactoring Telescope extension
+        require("telescope").load_extension("refactoring")
+        --- Bring up Telescope refactoring menu
+        map(
+            { "n", "x" },
+            "<leader>rs",
+            function() require("telescope").extensions.refactoring.refactors() end,
+            "[R]efactor [S]elect"
+        )
+        nmap("<leader>rr", vim.lsp.buf.rename, "[R]efactor [R]ename")
+        map("x", "<leader>re", ":Refactor extract ", "[R]efactor [E]xtact")
+        map("x", "<leader>rf", ":Refactor extract_to_file ", "[R]efactor Extact to [F]ile")
+        map("x", "<leader>rv", ":Refactor extract_var ", "[R]efactor Extact [V]ariable")
+        map({ "x", "n" }, "<leader>riv", ":Refactor inline_var", "[R]efactor [I]nline [V]ariable")
+        nmap("<leader>rif", ":Refactor inline_func", "[R]efactor [I]nline [F]unction")
+        nmap("<leader>rb", ":Refactor extract_block", "[R]efactor Extract [B]lock")
+        nmap("<leader>rbf", ":Refactor extract_block_to_file", "[R]efactor Extract [B]lock to [F]ile")
+
+
+
+        --trigger code action in normal and visual mode
+        nmap("<leader>lr", vim.lsp.buf.rename, "[L]sp [R]ename")
+        nmap("<leader>la", trigger_code_action, "[L]sp [A]ction")
+        map("v", "<leader>la", trigger_code_action, "[L]sp [A]ction")
+        nmap("<leader>lsd", require("telescope.builtin").lsp_document_symbols, "[L]SP [S]symbols [D]ocument")
+        nmap("<leader>lsp", require("telescope.builtin").lsp_dynamic_workspace_symbols, "[L]SP [S]symbols [P]roject")
+
 
         nmap("gd", require("telescope.builtin").lsp_definitions, "[G]oto [D]efinition")
         nmap("gr", require("telescope.builtin").lsp_references, "[G]oto [R]eferences")
         nmap("gI", require("telescope.builtin").lsp_implementations, "[G]oto [I]mplementation")
         nmap("<leader>D", require("telescope.builtin").lsp_type_definitions, "Type [D]efinition")
-        nmap("<leader>lsd", require("telescope.builtin").lsp_document_symbols, "[L]SP [S]symbols [D]ocument")
-        nmap("<leader>lsp", require("telescope.builtin").lsp_dynamic_workspace_symbols, "[L]SP [S]symbols [P]roject")
 
         -- See `:help K` for why this keymap
         nmap("K", vim.lsp.buf.hover, "Hover Documentation")
