@@ -175,6 +175,8 @@ return {
         nmap("<leader>lsd", require("telescope.builtin").lsp_document_symbols, "[L]SP [S]symbols [D]ocument")
         nmap("<leader>lsp", require("telescope.builtin").lsp_dynamic_workspace_symbols, "[L]SP [S]symbols [P]roject")
 
+        -- docstring generation
+        nmap("<leader>ld", ":Neogen<cr>", "[L]sp [D]ocstring")
 
         nmap("gd", require("telescope.builtin").lsp_definitions, "[G]oto [D]efinition")
         nmap("gr", require("telescope.builtin").lsp_references, "[G]oto [R]eferences")
