@@ -52,5 +52,17 @@ return {
 
         -- NOTE: You should make sure your terminal supports this
         vim.o.termguicolors = true
+
+        -- diagnostics
+        vim.diagnostic.config({
+            virtual_text = {
+                -- source = "always",  -- Or "if_many"
+                -- prefix = "●", -- Could be '■', '▎', 'x'
+            },
+            severity_sort = true,
+            float = {
+                source = "always", -- Or "if_many"
+            },
+        })
     end
 }
