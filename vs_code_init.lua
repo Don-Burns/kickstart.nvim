@@ -6,3 +6,11 @@ vim.keymap.set("", "<Space>", "<Nop>")
 vim.g.mapleader = " "
 require("custom.vim").apply_options()
 require("custom.keybinds").setup_vim_binds()
+-- Mappings
+function nmap(key, cmd)
+    vim.keymap.set("n", key, cmd)
+end
+
+nmap("<leader>la", function()
+    require("vscode").call("editor.action.codeAction")
+end)
