@@ -26,6 +26,8 @@ return {
         -- Sync clipboard between OS and Neovim.
         --  Remove this option if you want your OS clipboard to remain independent.
         --  See `:help 'clipboard'`
+        --  If having difficulty, install "xclip" on linux to ensure there is something that can take system clipboard
+        --  to neovim
         vim.o.clipboard = "unnamedplus"
 
         -- Enable break indent
