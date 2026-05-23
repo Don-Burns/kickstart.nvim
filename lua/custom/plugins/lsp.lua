@@ -3,8 +3,7 @@ return {
     {
         "ThePrimeagen/refactoring.nvim",
         dependencies = {
-            "nvim-lua/plenary.nvim",
-            "nvim-treesitter/nvim-treesitter",
+            "lewis6991/async.nvim",
         },
         config = function()
             require("refactoring").setup({
@@ -92,29 +91,9 @@ return {
 
     {
         "b0o/schemastore.nvim",
-        dependencies = {
-            "neovim/nvim-lspconfig",
-        },
         config = function()
-            lsp_config = require("lspconfig")
-            schema_store = require("schemastore")
-            -- json
-            lsp_config.jsonls.setup({
-                settings = {
-                    json = {
-                        schemas = schema_store.json.schemas(),
-                        validate = { enable = true },
-                    }
-                }
-            })
-            -- yaml
-            lsp_config.yamlls.setup({
-                settings = {
-                    yaml = {
-                        schemas = schema_store.yaml.schemas(),
-                    }
-                }
-            })
+            -- Schemas are now configured directly in init.lua via vim.lsp.config
+            -- This plugin just provides the schema data
         end,
     }
 }

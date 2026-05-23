@@ -34,26 +34,38 @@ return {
     setup_plugin_binds = function()
         -- Which key map, is what which-key uses to display what is available for next key press
         -- document existing key chains
-        require("which-key").register {
-            ["<leader>c"] = { name = "[C]ode", _ = "which_key_ignore" },
-            ["<leader>d"] = { name = "[D]iagnostics", _ = "which_key_ignore" },
-            ["<leader>g"] = { name = "[G]it", _ = "which_key_ignore" },
-            ["<leader>h"] = { name = "[H]arpoon/Git [H]unk", _ = "which_key_ignore" },
-            ["<leader>s"] = { name = "[S]earch", _ = "which_key_ignore" },
-            ["<leader>t"] = { name = "[T]oggle", _ = "which_key_ignore" },
-            ["<leader>f"] = { name = "[F]ind", _ = "which_key_ignore" },
-            ["<leader>l"] = { name = "[L]sp", _ = "which_key_ignore" },
-            ["<leader>r"] = { name = "[R]efactor", _ = "which_key_ignore" },
-            ["<leader>ri"] = { name = "[R]efactor [I]nline", _ = "which_key_ignore" },
-            ["<leader>ls"] = { name = "[L]sp [S]symbols", _ = "which_key_ignore" },
-            ["<leader>p"] = { name = "[P]roject", _ = "which_key_ignore" },
+        require("which-key").add {
+            { "<leader>c", group = "[C]ode" },
+            { "<leader>c_", hidden = true },
+            { "<leader>d", group = "[D]iagnostics" },
+            { "<leader>d_", hidden = true },
+            { "<leader>f", group = "[F]ind" },
+            { "<leader>f_", hidden = true },
+            { "<leader>g", group = "[G]it" },
+            { "<leader>g_", hidden = true },
+            { "<leader>h", group = "[H]arpoon/Git [H]unk" },
+            { "<leader>h_", hidden = true },
+            { "<leader>l", group = "[L]sp" },
+            { "<leader>l_", hidden = true },
+            { "<leader>ls", group = "[L]sp [S]symbols" },
+            { "<leader>ls_", hidden = true },
+            { "<leader>p", group = "[P]roject" },
+            { "<leader>p_", hidden = true },
+            { "<leader>r", group = "[R]efactor" },
+            { "<leader>r_", hidden = true },
+            { "<leader>ri", group = "[R]efactor [I]nline" },
+            { "<leader>ri_", hidden = true },
+            { "<leader>s", group = "[S]earch" },
+            { "<leader>s_", hidden = true },
+            { "<leader>t", group = "[T]oggle" },
+            { "<leader>t_", hidden = true },
         }
         -- register which-key VISUAL mode
         -- required for visual <leader>hs (hunk stage) to work
-        require("which-key").register({
-            ["<leader>"] = { name = "VISUAL <leader>" },
-            ["<leader>h"] = { "Git [H]unk" },
-        }, { mode = "v" })
+        require("which-key").add({
+            { "<leader>", group = "VISUAL <leader>", mode = "v" },
+            { "<leader>h", desc = "Git [H]unk", mode = "v" },
+        })
         -- commenting
         require("Comment").setup({
             ---Add a space b/w comment and the line
@@ -148,13 +160,12 @@ return {
             }
         end
         -- refactors
-        -- load refactoring Telescope extension
-        require("telescope").load_extension("refactoring")
-        --- Bring up Telescope refactoring menu
+        --- Bring up refactoring menu
+        --- https://github.com/ThePrimeagen/refactoring.nvim#keymaps
         map(
             { "n", "x" },
             "<leader>rs",
-            function() require("telescope").extensions.refactoring.refactors() end,
+            function() require("refactoring").extensions.refactoring.refactors() end,
             "[R]efactor [S]elect"
         )
         nmap("<leader>rr", vim.lsp.buf.rename, "[R]efactor [R]ename")
