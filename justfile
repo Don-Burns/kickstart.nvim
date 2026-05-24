@@ -1,7 +1,9 @@
 install-config-dependencies:
     cargo install --locked tree-sitter-cli
-    npm install -g cspell@@10.0.0
-    uv tool install mypy ruff black
+    npm install -g cspell@10.0.0
+    uv tool install mypy
+    uv tool install ruff
+    uv tool install black
 
 # Run all tests
 test:
