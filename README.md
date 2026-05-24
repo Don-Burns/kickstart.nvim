@@ -57,3 +57,47 @@ return {
   end,
 }
 ```
+
+## Testing
+
+This config includes automated tests using [plenary.nvim](https://github.com/nvim-lua/plenary.nvim)'s test harness.
+Tests run with the full Neovim configuration loaded.
+
+### Running Tests
+
+Requires [just](https://github.com/casey/just) command runner.
+
+```sh
+# Run all tests
+just test
+
+# Run a specific test file
+just test-file testing/specs/startup_spec.lua
+
+# Update snapshots (when diagnostics legitimately change)
+just update-snapshots
+
+# Regenerate the diagnostics snapshot only
+just generate-snapshot
+```
+
+### Test Categories
+
+| Test | Purpose |
+|------|---------|
+| `startup_spec.lua` | Verifies Neovim starts without errors/warnings and core plugins load |
+| `diagnostics_spec.lua` | Snapshot tests for Python diagnostics (ruff, mypy, cspell) |
+| `format_spec.lua` | Verifies format-on-save works and can be toggled |
+| `telescope_spec.lua` | Verifies Telescope pickers and Treesitter integration |
+
+### Updating Snapshots
+
+When LSP/linter versions change and diagnostics legitimately differ:
+
+```sh
+just update-snapshots
+git diff testing/snapshots/  # Review changes
+git add testing/snapshots/
+```
+
+Tests also run in CI via GitHub Actions on push and pull requests.
