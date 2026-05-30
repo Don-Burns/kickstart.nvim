@@ -3,10 +3,11 @@
 
 local M = {}
 
---- Get the path to this Neovim config directory
+--- Get the path to this Neovim config directory (resolved, no symlinks)
 ---@return string
 function M.get_config_path()
-    return vim.fn.fnamemodify(debug.getinfo(1, "S").source:sub(2), ":h:h:h")
+    local raw = vim.fn.stdpath("config")
+    return vim.fn.resolve(raw)
 end
 
 --- Get path to testing directory
