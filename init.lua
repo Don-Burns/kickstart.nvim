@@ -392,13 +392,10 @@ local servers = {
   -- go
   gopls = {},
   -- python
-  -- ruff doesn't give docs on hover or code completion so use jedi for that
-  jedi_language_server = {
-    init_options = {
-      completion = {
-        disableSnippets = true,
-      }
-    }
+  -- ruff doesn't give docs on hover or code completion so use zuban for that
+  zuban = {
+    --@type lspconfig.settings.zuban
+    settings = {}
   },
   ruff = {
     -- on_attach = function(client, _)
@@ -427,8 +424,6 @@ local servers = {
   jsonls = {},
   cspell_ls = {},
 }
-
--- lazydev.nvim handles Neovim lua configuration (loaded via opts above)
 
 -- nvim-cmp supports additional completion capabilities, so broadcast that to servers
 local capabilities = vim.lsp.protocol.make_client_capabilities()
