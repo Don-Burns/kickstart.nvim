@@ -1,9 +1,9 @@
 install-config-dependencies:
-    cargo install --locked tree-sitter-cli
+    @command -v tree-sitter >/dev/null 2>&1 && echo "tree-sitter-cli already installed, skipping" || cargo install --locked tree-sitter-cli
     npm install -g cspell@10.0.0
-    uv tool install mypy
-    uv tool install ruff
-    uv tool install black
+    @command -v mypy >/dev/null 2>&1 && echo "mypy already installed, skipping" || uv tool install mypy
+    @command -v ruff >/dev/null 2>&1 && echo "ruff already installed, skipping" || uv tool install ruff
+    @command -v black >/dev/null 2>&1 && echo "black already installed, skipping" || uv tool install black
 
 # Run all tests
 test:
