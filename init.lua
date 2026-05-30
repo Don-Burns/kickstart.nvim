@@ -425,6 +425,7 @@ local servers = {
   sqlls = {},
   yamlls = { redhat = { telemetry = { enable = false } } },
   jsonls = {},
+  cspell_ls = {},
 }
 
 -- lazydev.nvim handles Neovim lua configuration (loaded via opts above)

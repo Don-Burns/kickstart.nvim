@@ -47,11 +47,9 @@ return {
             -- Installs the needed programs with mason
             "williamboman/mason.nvim",
             "jay-babu/mason-null-ls.nvim",
-            "davidmh/cspell.nvim", -- extension for cspell to work with null-ls
         },
         config = function()
             local null_ls = require("null-ls")
-            local cspell = require("cspell")
 
             null_ls.setup({
                 sources = {
@@ -59,14 +57,6 @@ return {
                     null_ls.builtins.diagnostics.mypy.with({
                         extra_args = { "--strict" },
                     }),
-                    -- spelling diagnostics and code actions
-                    cspell.diagnostics.with({
-                        -- change level of the diagnostic
-                        diagnostics_postprocess = function(diagnostic)
-                            diagnostic.severity = vim.diagnostic.severity.INFO
-                        end
-                    }),
-                    cspell.code_actions,
                     -- yaml
                     null_ls.builtins.formatting.yamlfix.with({
                         env = {
