@@ -62,8 +62,8 @@ jobs:
             ln -sf "$OLDPWD" nvim
           fi
           cd nvim
-          # Install required LSP servers and tools via Mason
-          nvim --headless +"MasonInstall ruff lua-language-server mypy cspell" +"sleep 30" +qa || true
+          # Install all Mason packages and wait for completion (fails on timeout/error)
+          nvim --headless +"luafile testing/mason_wait.lua"
       - name: Run tests
         run: |-
           export XDG_CONFIG_HOME=$(pwd)/..
