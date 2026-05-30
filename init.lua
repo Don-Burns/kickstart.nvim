@@ -62,7 +62,7 @@ require("lazy").setup({
       { "j-hui/fidget.nvim",       opts = {} },
 
       -- Additional lua configuration, makes nvim stuff amazing!
-      "folke/neodev.nvim",
+      { "folke/lazydev.nvim",      ft = "lua",   opts = {} },
     },
   },
 
@@ -156,7 +156,7 @@ require("lazy").setup({
   -- Fuzzy Finder (files, lsp, etc)
   {
     "nvim-telescope/telescope.nvim",
-    version = 'v2.2.0',
+    version = "v2.2.0",
     dependencies = {
       "nvim-lua/plenary.nvim",
       -- Fuzzy Finder Algorithm which requires local dependencies to be built.
@@ -378,8 +378,7 @@ local on_attach = keybinds.lsp_on_attach_binds
 -- mason-lspconfig requires that these setup functions are called in this order
 -- before setting up the servers.
 require("mason").setup()
-require("mason-lspconfig").setup()
-
+-- require("mason-lspconfig").setup()
 -- Enable the following language servers
 --  Feel free to add/remove any LSPs that you want here. They will automatically be installed.
 --
@@ -394,13 +393,13 @@ local servers = {
   gopls = {},
   -- python
   -- ruff doesn't give docs on hover or code completion so use jedi for that
-  --   jedi_language_server = {
-  --     init_options = {
-  --       completion = {
-  --         disableSnippets = true,
-  --       }
-  --     }
-  --   },
+  jedi_language_server = {
+    init_options = {
+      completion = {
+        disableSnippets = true,
+      }
+    }
+  },
   ruff = {
     -- on_attach = function(client, _)
     -- client.server_capabilities.hoverProvider = false
@@ -414,11 +413,13 @@ local servers = {
   dockerls = {},
   html = { filetypes = { "html", "twig", "hbs" } },
   lua_ls = {
-    Lua = {
-      workspace = { checkThirdParty = false },
-      telemetry = { enable = false },
-      -- NOTE: toggle below to ignore Lua_LS's noisy `missing-fields` warnings
-      -- diagnostics = { disable = { 'missing-fields' } },
+    ---@type lspconfig.settings.lua_ls
+    settings = {
+      Lua = {
+        format = { enable = false }, -- Disable formatting (formatting is done by stylua)
+        runtime = { version = "LuaJIT" },
+        workspace = { checkThirdParty = false },
+      },
     },
   },
   sqlls = {},
@@ -426,8 +427,7 @@ local servers = {
   jsonls = {},
 }
 
--- Setup neovim lua configuration
-require("neodev").setup()
+-- lazydev.nvim handles Neovim lua configuration (loaded via opts above)
 
 -- nvim-cmp supports additional completion capabilities, so broadcast that to servers
 local capabilities = vim.lsp.protocol.make_client_capabilities()
