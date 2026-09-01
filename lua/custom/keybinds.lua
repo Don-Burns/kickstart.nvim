@@ -29,6 +29,20 @@ return {
         vim.keymap.set("n", "<C-Q>", "<cmd>wqa!<cr>", { desc = "Force save and quit (:wq!)" })
         vim.keymap.set("n", "<leader>|", "<cmd>vsplit<cr>", { desc = "Vertical Split" })
         vim.keymap.set("n", "<leader>\\", "<cmd>split<cr>", { desc = "Horizontal Split" })
+        -- Open a terminal in a horizontal split below the current window, entering
+        -- insert mode immediately. If a terminal is already open in the current
+        -- tab, just jump to it (insert mode) instead of opening another one.
+        vim.keymap.set("n", "<leader>t", function()
+            for _, win in ipairs(vim.api.nvim_tabpage_list_wins(0)) do
+                if vim.bo[vim.api.nvim_win_get_buf(win)].buftype == "terminal" then
+                    vim.api.nvim_set_current_win(win)
+                    vim.cmd.startinsert()
+                    return
+                end
+            end
+            vim.cmd("belowright split | terminal")
+            vim.cmd.startinsert()
+        end, { desc = "Horizontal Split Terminal" })
     end,
     -- binds that rely on plugins so cannot be called before plugin install and other init setup
     setup_plugin_binds = function()
