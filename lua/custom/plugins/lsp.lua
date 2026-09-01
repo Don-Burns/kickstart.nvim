@@ -56,6 +56,19 @@ return {
                     -- python
                     null_ls.builtins.diagnostics.mypy.with({
                         extra_args = { "--strict" },
+                        dynamic_command = function(params)
+                            local venv = vim.fn.getcwd() .. "/.venv/bin/mypy"
+                            if vim.fn.executable(venv) == 1 then
+                                return venv
+                            end
+                            if vim.env.VIRTUAL_ENV then
+                                local venv_bin = vim.env.VIRTUAL_ENV .. "/bin/mypy"
+                                if vim.fn.executable(venv_bin) == 1 then
+                                    return venv_bin
+                                end
+                            end
+                            return "mypy"
+                        end,
                     }),
                     -- yaml
                     null_ls.builtins.formatting.yamlfix.with({
