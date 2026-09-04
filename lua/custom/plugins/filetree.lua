@@ -16,7 +16,19 @@ return {
     require('neo-tree').setup {
       enable_git_status = true,
       enable_diagnostics = true,
-      enable_normal_mode_for_inputs = true
+      enable_normal_mode_for_inputs = true,
+      filesystem = {
+        filtered_items = {
+          hide_dotfiles = true, -- hide dotfiles unless explicitly allowlisted below
+          always_show = { -- show these exact names despite the dotfile filter
+            ".github",
+          },
+          always_show_by_pattern = { -- show files matching these glob patterns
+            ".pre-commit*.yaml",
+            ".pre-commit*.yml",
+          },
+        },
+      },
     }
   end,
   opts = function()
@@ -53,5 +65,3 @@ return {
   }
   end
 }
-
-
