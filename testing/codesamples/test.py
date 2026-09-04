@@ -6,11 +6,9 @@ TOP_LEVEL_CONSTANT = 1
 
 
 class myClass:
-    def bar(self) -> int:
-        ...
+    def bar(self) -> int: ...
 
-    def foo(self):
-        ...
+    def foo(self): ...
 
 
 def main() -> int:
@@ -19,6 +17,8 @@ def main() -> int:
     dictionary = {
         "key": "string value",
     }
+    f_string = f"hello {variable}"
+    template_string = "hello {{variable}}"
     abspath("ssdfa")
     # This is a comment
 
@@ -46,8 +46,7 @@ def main() -> int:
     def a():
         print("a")
 
-        def b():
-            ...
+        def b(): ...
 
     for i in [1, 2, 3]:
         print(i)

@@ -71,6 +71,7 @@ return {
                 },
                 astrodark = {
                     -- first parameter is the highlight table and the second parameter is the color palette table
+                    pythonFormatField = { fg = "#0A7FFF" },
                     modify_hl_groups = function(highlight, color) -- modify_hl_groups function allows you to modify hl groups,
                         -- Comments
                         highlight.Comment.fg = color.comments     -- this colour is defined above in palettes
