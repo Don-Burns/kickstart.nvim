@@ -420,7 +420,16 @@ local servers = {
     },
   },
   sqlls = {},
-  yamlls = { redhat = { telemetry = { enable = false } } },
+  yamlls = {
+    settings = {
+      yaml = {
+        format = {
+          enable = true,
+        },
+      },
+      redhat = { telemetry = { enable = false } },
+    },
+  },
   jsonls = {},
   cspell_ls = {},
 }

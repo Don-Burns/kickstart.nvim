@@ -70,12 +70,6 @@ return {
                             return "mypy"
                         end,
                     }),
-                    -- yaml
-                    null_ls.builtins.formatting.yamlfix.with({
-                        env = {
-                            YAMLFIX_EXPLICIT_START = "false", -- adding --- to start of each doc in file
-                        }
-                    }),
                 },
                 -- determine if none-ls should run on current buffer
                 should_attach = function(bufnr)
