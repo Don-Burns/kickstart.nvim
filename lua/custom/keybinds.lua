@@ -5,6 +5,7 @@ local state = {
     bottom_terminal = {
         buffer_id = -1,
         window_id = -1,
+        last_editor_win = -1,
     },
 }
 
@@ -39,20 +40,39 @@ return {
         vim.keymap.set("n", "<leader>|", "<cmd>vsplit<cr>", { desc = "Vertical Split" })
         vim.keymap.set("n", "<leader>\\", "<cmd>split<cr>", { desc = "Horizontal Split" })
         vim.keymap.set("t", "<esc><esc>", "<C-\\><C-n>", { desc = "Exit Terminal Mode" })
-        -- Open a terminal in a horizontal split below the current window, entering
-        -- insert mode immediately. If a terminal is already open in the current
-        -- tab, just jump to it (insert mode) instead of opening another one.
-        vim.keymap.set("n", "<leader>t", function()
+
+        -- Track the last "real" editor window (not the bottom terminal) so we can
+        -- jump back to it when toggling the terminal off.
+        vim.api.nvim_create_autocmd("WinLeave", {
+            callback = function()
+                local win = vim.api.nvim_get_current_win()
+                if win == state.bottom_terminal.window_id then
+                    return
+                end
+                if vim.bo[vim.api.nvim_win_get_buf(win)].buftype == "" then
+                    state.bottom_terminal.last_editor_win = win
+                end
+            end,
+        })
+
+        -- Toggle a terminal in a horizontal split below the current window. If the
+        -- terminal is already open, jump to it (insert mode). If already in the
+        -- terminal, jump back to the last editor window instead.
+        local function toggle_terminal()
             local window = state.bottom_terminal.window_id
             local buffer = state.bottom_terminal.buffer_id
 
-            -- if there is a valid window and buffer, jump to it
-            -- otherwise create a new buffer and window and store their ids in state
-            print("window: " .. window .. ", buffer: " .. buffer)
+            if vim.api.nvim_get_current_win() == window then
+                if vim.api.nvim_win_is_valid(state.bottom_terminal.last_editor_win) then
+                    vim.api.nvim_set_current_win(state.bottom_terminal.last_editor_win)
+                end
+                return
+            end
+
             if vim.api.nvim_win_is_valid(window) and vim.api.nvim_buf_is_valid(buffer) then
                 vim.api.nvim_set_current_win(window)
             else
-                -- if somehow the windows is valid but buffer isn't
+                -- if somehow the window is valid but buffer isn't
                 -- e.g. I opened a terminal, then closed the buffer but not the window,
                 -- but use window for something else
                 if not vim.api.nvim_buf_is_valid(buffer) then
@@ -70,7 +90,14 @@ return {
             end
 
             vim.cmd.startinsert()
-        end, { desc = "Horizontal Split Terminal" })
+        end
+
+        vim.keymap.set("n", "<leader>t", toggle_terminal, { desc = "Toggle Terminal" })
+        vim.keymap.set("n", "<F12>", toggle_terminal, { desc = "Toggle Terminal" })
+        vim.keymap.set("t", "<F12>", function()
+            vim.cmd([[stopinsert]])
+            toggle_terminal()
+        end, { desc = "Toggle Terminal" })
     end,
     -- binds that rely on plugins so cannot be called before plugin install and other init setup
     setup_plugin_binds = function()
