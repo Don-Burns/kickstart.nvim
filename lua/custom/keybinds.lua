@@ -1,4 +1,13 @@
 -- Module for organising all my binds
+
+-- State for tracking things like windows that I only want 1 copy of and if open to be reused
+local state = {
+    bottom_terminal = {
+        buffer_id = -1,
+        window_id = -1,
+    },
+}
+
 return {
     -- for keymaps which are vim only.
     -- split from plugin related ones so these can load first and give me max functionality if I break the config =P
@@ -29,18 +38,37 @@ return {
         vim.keymap.set("n", "<C-Q>", "<cmd>wqa!<cr>", { desc = "Force save and quit (:wq!)" })
         vim.keymap.set("n", "<leader>|", "<cmd>vsplit<cr>", { desc = "Vertical Split" })
         vim.keymap.set("n", "<leader>\\", "<cmd>split<cr>", { desc = "Horizontal Split" })
+        vim.keymap.set("t", "<esc><esc>", "<C-\\><C-n>", { desc = "Exit Terminal Mode" })
         -- Open a terminal in a horizontal split below the current window, entering
         -- insert mode immediately. If a terminal is already open in the current
         -- tab, just jump to it (insert mode) instead of opening another one.
         vim.keymap.set("n", "<leader>t", function()
-            for _, win in ipairs(vim.api.nvim_tabpage_list_wins(0)) do
-                if vim.bo[vim.api.nvim_win_get_buf(win)].buftype == "terminal" then
-                    vim.api.nvim_set_current_win(win)
-                    vim.cmd.startinsert()
-                    return
+            local window = state.bottom_terminal.window_id
+            local buffer = state.bottom_terminal.buffer_id
+
+            -- if there is a valid window and buffer, jump to it
+            -- otherwise create a new buffer and window and store their ids in state
+            print("window: " .. window .. ", buffer: " .. buffer)
+            if vim.api.nvim_win_is_valid(window) and vim.api.nvim_buf_is_valid(buffer) then
+                vim.api.nvim_set_current_win(window)
+            else
+                -- if somehow the windows is valid but buffer isn't
+                -- e.g. I opened a terminal, then closed the buffer but not the window,
+                -- but use window for something else
+                if not vim.api.nvim_buf_is_valid(buffer) then
+                    buffer = vim.api.nvim_create_buf(false, true)
+                    state.bottom_terminal.buffer_id = buffer
                 end
+
+                window = vim.api.nvim_open_win(buffer, true, {
+                    split = "below",
+                    height = 15,
+                    style = "minimal",
+                })
+                state.bottom_terminal.window_id = window
+                vim.cmd.terminal()
             end
-            vim.cmd("belowright split | terminal")
+
             vim.cmd.startinsert()
         end, { desc = "Horizontal Split Terminal" })
     end,
@@ -49,36 +77,36 @@ return {
         -- Which key map, is what which-key uses to display what is available for next key press
         -- document existing key chains
         require("which-key").add {
-            { "<leader>c", group = "[C]ode" },
-            { "<leader>c_", hidden = true },
-            { "<leader>d", group = "[D]iagnostics" },
-            { "<leader>d_", hidden = true },
-            { "<leader>f", group = "[F]ind" },
-            { "<leader>f_", hidden = true },
-            { "<leader>g", group = "[G]it" },
-            { "<leader>g_", hidden = true },
-            { "<leader>h", group = "[H]arpoon/Git [H]unk" },
-            { "<leader>h_", hidden = true },
-            { "<leader>l", group = "[L]sp" },
-            { "<leader>l_", hidden = true },
-            { "<leader>ls", group = "[L]sp [S]symbols" },
+            { "<leader>c",   group = "[C]ode" },
+            { "<leader>c_",  hidden = true },
+            { "<leader>d",   group = "[D]iagnostics" },
+            { "<leader>d_",  hidden = true },
+            { "<leader>f",   group = "[F]ind" },
+            { "<leader>f_",  hidden = true },
+            { "<leader>g",   group = "[G]it" },
+            { "<leader>g_",  hidden = true },
+            { "<leader>h",   group = "[H]arpoon/Git [H]unk" },
+            { "<leader>h_",  hidden = true },
+            { "<leader>l",   group = "[L]sp" },
+            { "<leader>l_",  hidden = true },
+            { "<leader>ls",  group = "[L]sp [S]symbols" },
             { "<leader>ls_", hidden = true },
-            { "<leader>p", group = "[P]roject" },
-            { "<leader>p_", hidden = true },
-            { "<leader>r", group = "[R]efactor" },
-            { "<leader>r_", hidden = true },
-            { "<leader>ri", group = "[R]efactor [I]nline" },
+            { "<leader>p",   group = "[P]roject" },
+            { "<leader>p_",  hidden = true },
+            { "<leader>r",   group = "[R]efactor" },
+            { "<leader>r_",  hidden = true },
+            { "<leader>ri",  group = "[R]efactor [I]nline" },
             { "<leader>ri_", hidden = true },
-            { "<leader>s", group = "[S]earch" },
-            { "<leader>s_", hidden = true },
-            { "<leader>t", group = "[T]oggle" },
-            { "<leader>t_", hidden = true },
+            { "<leader>s",   group = "[S]earch" },
+            { "<leader>s_",  hidden = true },
+            { "<leader>t",   group = "[T]oggle" },
+            { "<leader>t_",  hidden = true },
         }
         -- register which-key VISUAL mode
         -- required for visual <leader>hs (hunk stage) to work
         require("which-key").add({
-            { "<leader>", group = "VISUAL <leader>", mode = "v" },
-            { "<leader>h", desc = "Git [H]unk", mode = "v" },
+            { "<leader>",  group = "VISUAL <leader>", mode = "v" },
+            { "<leader>h", desc = "Git [H]unk",       mode = "v" },
         })
         -- commenting
         require("Comment").setup({
