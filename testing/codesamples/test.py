@@ -18,7 +18,15 @@ def main() -> int:
         "key": "string value",
     }
     f_string = f"hello {variable}"
+    mult_line_f_string = f"""\
+        hello {variable}"
+        {dictionary}
+    """
     template_string = "hello {{variable}}"
+    mult_line_template_string = """\
+        hello {variable}"
+        {dictionary}
+    """
     abspath("ssdfa")
     # This is a comment
 
