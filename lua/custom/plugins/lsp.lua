@@ -40,53 +40,6 @@ return {
         end,
     },
     {
-        -- community null ls package for non-lsp progs like mypy
-        "nvimtools/none-ls.nvim",
-
-        dependencies = {
-            -- Installs the needed programs with mason
-            "williamboman/mason.nvim",
-            "jay-babu/mason-null-ls.nvim",
-        },
-        config = function()
-            local null_ls = require("null-ls")
-
-            null_ls.setup({
-                sources = {
-                    -- python
-                    null_ls.builtins.diagnostics.mypy.with({
-                        extra_args = { "--strict" },
-                        dynamic_command = function(params)
-                            local venv = vim.fn.getcwd() .. "/.venv/bin/mypy"
-                            if vim.fn.executable(venv) == 1 then
-                                return venv
-                            end
-                            if vim.env.VIRTUAL_ENV then
-                                local venv_bin = vim.env.VIRTUAL_ENV .. "/bin/mypy"
-                                if vim.fn.executable(venv_bin) == 1 then
-                                    return venv_bin
-                                end
-                            end
-                            return "mypy"
-                        end,
-                    }),
-                },
-                -- determine if none-ls should run on current buffer
-                should_attach = function(bufnr)
-                    local buff_name = vim.api.nvim_buf_get_name(bufnr)
-                    return not buff_name:match("^git://")
-                end,
-                on_attach = require("custom.keybinds").lsp_on_attach_binds,
-            })
-            require("mason-null-ls").setup({
-                ensure_installed = nil,
-                automatic_installation = true,
-            })
-        end,
-
-    },
-
-    {
         "b0o/schemastore.nvim",
         config = function()
             -- Schemas are now configured directly in init.lua via vim.lsp.config
