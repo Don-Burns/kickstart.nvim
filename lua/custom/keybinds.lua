@@ -87,6 +87,12 @@ return {
                 })
                 state.bottom_terminal.window_id = window
                 vim.cmd.terminal()
+
+                -- Activate venv if .venv exists in current directory
+                local venv_path = vim.fn.getcwd() .. "/.venv"
+                if vim.fn.isdirectory(venv_path) == 1 then
+                    vim.fn.jobsend(vim.b.terminal_job_id, "source .venv/bin/activate\n")
+                end
             end
 
             vim.cmd.startinsert()
