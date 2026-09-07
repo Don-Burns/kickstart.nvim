@@ -34,9 +34,6 @@ return {
 
 
         -- Buffer/Panel handling
-        vim.keymap.set("n", "<leader>q", "<cmd>confirm q<cr>", { desc = "Quit (:q)" })
-        vim.keymap.set("n", "<C-s>", "<cmd>w!<cr>", { desc = "Force write (:w!)" })
-        vim.keymap.set("n", "<C-Q>", "<cmd>wqa!<cr>", { desc = "Force save and quit (:wq!)" })
         vim.keymap.set("n", "<leader>|", "<cmd>vsplit<cr>", { desc = "Vertical Split" })
         vim.keymap.set("n", "<leader>\\", "<cmd>split<cr>", { desc = "Horizontal Split" })
         vim.keymap.set("t", "<esc><esc>", "<C-\\><C-n>", { desc = "Exit Terminal Mode" })
