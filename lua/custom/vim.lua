@@ -64,5 +64,28 @@ return {
                 source = "always", -- Or "if_many"
             },
         })
+
+        -- DiffOrig command: view changes since file was loaded
+        -- Useful after :recover to see what changed during recovery
+        -- This is taken from what is suggested in nvim docs. `:h DiffOrig`
+        vim.cmd([[
+            command DiffOrig vert new | set buftype=nofile | read ++edit # | 0d_ | diffthis | wincmd p | diffthis
+        ]])
+
+        -- SwapExists autocmd: show workflow reminder when swap file detected
+        vim.api.nvim_create_autocmd("SwapExists", {
+            group = vim.api.nvim_create_augroup("SwapReminder", { clear = true }),
+            callback = function()
+                vim.notify(
+                    "Swap file detected!\n\n"
+                    .. "Workflow:\n"
+                    .. "1. Press 'r' to recover from swap\n"
+                    .. "2. Run :DiffOrig to see differences\n"
+                    .. "3. Keep or discard based on changes",
+                    vim.log.levels.WARN,
+                    { timeout = 10000 }  -- 10 seconds before auto-dismiss
+                )
+            end,
+        })
     end
 }
