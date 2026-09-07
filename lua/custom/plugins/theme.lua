@@ -96,6 +96,12 @@ return {
 
                         -- Strings
                         highlight.String.fg = color.strings
+
+                        -- Diff highlighting - make it pop
+                        highlight.DiffAdd = { fg = "#22C55E", bg = "#1A3A1A", bold = true }
+                        highlight.DiffDelete = { fg = "#EF4444", bg = "#3A1A1A", bold = true }
+                        highlight.DiffChange = { fg = "#3B82F6", bg = "#1A2A3A", bold = true }
+                        highlight.DiffText = { fg = "#FBBF24", bg = "#2A2410", bold = true }
                     end,
                     -- ["@String"] = { fg = "#ff00ff", bg = "NONE" },
                 },
