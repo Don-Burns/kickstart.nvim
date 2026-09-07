@@ -95,7 +95,6 @@ return {
             vim.cmd.startinsert()
         end
 
-        vim.keymap.set("n", "<leader>t", toggle_terminal, { desc = "Toggle Terminal" })
         vim.keymap.set("n", "<F12>", toggle_terminal, { desc = "Toggle Terminal" })
         vim.keymap.set("t", "<F12>", function()
             vim.cmd([[stopinsert]])
