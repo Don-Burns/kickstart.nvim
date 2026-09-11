@@ -43,11 +43,6 @@ return {
         local client = vim.lsp.get_client_by_id(client_id)
         local bufnr = args.buf
 
-        -- Only attach to clients that support document formatting
-        if not client.server_capabilities.documentFormattingProvider then
-          return
-        end
-
         -- Tsserver usually works poorly. Sorry you work with bad languages
         -- You can remove this line if you know what you're doing :)
         if client.name == 'tsserver' then
@@ -61,6 +56,13 @@ return {
           buffer = bufnr,
           callback = function()
             if not format_is_enabled then
+              return
+            end
+
+            -- Checked here (not at LspAttach time) because some servers,
+            -- e.g. ruff, register formatting support dynamically after
+            -- attaching rather than advertising it up-front.
+            if not client:supports_method("textDocument/formatting") then
               return
             end
 

@@ -139,6 +139,23 @@ function M.wait_for_diagnostics(bufnr, timeout_ms, min_count)
     end, timeout_ms)
 end
 
+--- Wait for a diagnostic from a specific source to appear on a buffer
+---@param bufnr integer buffer number
+---@param source string diagnostic source name to wait for (e.g. "cSpell")
+---@param timeout_ms integer|nil timeout in milliseconds (default 30000)
+---@return boolean true if a diagnostic from that source appeared
+function M.wait_for_diagnostic_source(bufnr, source, timeout_ms)
+    timeout_ms = timeout_ms or 30000
+    return M.wait_for(function()
+        for _, d in ipairs(vim.diagnostic.get(bufnr)) do
+            if d.source == source then
+                return true
+            end
+        end
+        return false
+    end, timeout_ms)
+end
+
 --- Capture :messages output
 ---@return string
 function M.capture_messages()

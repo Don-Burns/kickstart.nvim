@@ -28,9 +28,11 @@ describe("Python diagnostics", function()
         local has_diagnostics = helpers.wait_for_diagnostics(bufnr, 45000, 3)
         assert.is_true(has_diagnostics, "Diagnostics did not appear within timeout")
 
-        -- Give a bit more time for all sources to report
-        -- (mypy can be slow, cspell runs async)
-        vim.wait(5000)
+        -- cSpell is the slowest source to report (especially on a cold
+        -- install with no warm dictionary cache), so wait for it explicitly
+        -- rather than relying on a fixed extra sleep.
+        local has_cspell = helpers.wait_for_diagnostic_source(bufnr, "cSpell", 45000)
+        assert.is_true(has_cspell, "cSpell diagnostics did not appear within timeout")
 
         -- Get all diagnostics for the buffer
         local diagnostics = vim.diagnostic.get(bufnr)

@@ -15,11 +15,21 @@ vim.cmd("source " .. config_path .. "/init.lua")
 local registry = require("mason-registry")
 local mason_lspconfig = require("mason-lspconfig")
 
+-- Ensure the python treesitter parser is installed before tests run.
+-- The config auto-installs parsers asynchronously on first buffer attach, and
+-- `just test` runs spec files as concurrent subprocesses that would otherwise
+-- race to install the same parser into the shared cache dir at once.
+local ts_installed = require("nvim-treesitter").get_installed("parsers")
+if not vim.tbl_contains(ts_installed, "python") then
+    print("Installing treesitter parser: python")
+    require("nvim-treesitter").install("python"):wait(120000)
+end
+
 -- Collect the Mason package names that mason-lspconfig would install.
 -- mason-lspconfig maps lspconfig names (e.g. "lua_ls") to Mason package names
 -- (e.g. "lua-language-server") via get_mappings().
 local mappings = mason_lspconfig.get_mappings()
-local lspconfig_to_mason = mappings.lspconfig_to_mason or {}
+local lspconfig_to_mason = mappings.lspconfig_to_package or {}
 
 -- The servers table keys from init.lua (loaded via ensure_installed)
 local ensure_installed = mason_lspconfig.get_installed_servers and {} or {}
@@ -79,7 +89,10 @@ print("Mason packages to install: " .. table.concat(packages_to_install, ", "))
 -- Refresh the registry to get latest package info
 registry.refresh()
 
--- Kick off installation for any packages not yet installed
+-- Kick off installation for any packages not yet installed, tracking
+-- failures via the install() callback (Package has no get_handle() method).
+local failed_packages = {}
+
 for _, pkg_name in ipairs(packages_to_install) do
     local ok, pkg = pcall(registry.get_package, pkg_name)
     if not ok then
@@ -89,7 +102,11 @@ for _, pkg_name in ipairs(packages_to_install) do
     end
     if not pkg:is_installed() then
         print("Installing: " .. pkg_name)
-        pkg:install()
+        pkg:install():once("closed", function()
+            if not pkg:is_installed() then
+                failed_packages[pkg_name] = true
+            end
+        end)
     else
         print("Already installed: " .. pkg_name)
     end
@@ -109,14 +126,8 @@ local function all_installed()
 end
 
 local function any_failed()
-    for _, pkg_name in ipairs(packages_to_install) do
-        local ok, pkg = pcall(registry.get_package, pkg_name)
-        if ok then
-            local handle = pkg:get_handle()
-            if handle and handle:is_closed() and not pkg:is_installed() then
-                return pkg_name
-            end
-        end
+    for pkg_name in pairs(failed_packages) do
+        return pkg_name
     end
     return nil
 end
