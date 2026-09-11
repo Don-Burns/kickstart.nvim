@@ -282,5 +282,6 @@ return {
         end, { desc = "Format current buffer with LSP" })
         nmap("<leader>lf", "<cmd>:Format<cr>", "[F]ormat Current Buffer")
         nmap("<leader>tf", "<cmd>:ToggleAutoFormat<cr>", "[T]oggle Auto [F]ormat")
+        nmap("<leader>tr", "<cmd>:ToggleRulers<cr>", "[T]oggle [R]ulers")
     end,
 }

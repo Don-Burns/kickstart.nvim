@@ -53,6 +53,56 @@ return {
         -- NOTE: You should make sure your terminal supports this
         vim.o.termguicolors = true
 
+        -- Rulers, one highlight per column since colorcolumn only supports a
+        -- single color natively. Drawn as virtual text past eol so they're
+        -- always visible, not just where text crosses them (like native colorcolumn).
+        local rulers = {
+            { col = 88,  color = "#3B3B3B" },
+            { col = 100, color = "#4a4a2a" },
+            { col = 120, color = "#7A3D23" },
+            { col = 150, color = "#961714" },
+        }
+        local ruler_ns = vim.api.nvim_create_namespace("Rulers")
+        local rulers_enabled = true
+        for i, r in ipairs(rulers) do
+            vim.api.nvim_set_hl(0, "Ruler" .. i, { bg = r.color })
+        end
+
+        local function draw_rulers()
+            local buf = vim.api.nvim_get_current_buf()
+            local buftype = vim.bo[buf].buftype
+            if not rulers_enabled or buftype ~= "" or vim.api.nvim_win_get_config(0).relative ~= "" then
+                vim.api.nvim_buf_clear_namespace(buf, ruler_ns, 0, -1)
+                return
+            end
+            vim.api.nvim_buf_clear_namespace(buf, ruler_ns, 0, -1)
+            local top = vim.fn.line("w0") - 1
+            local bot = vim.fn.line("w$")
+            local lines = vim.api.nvim_buf_get_lines(buf, top, bot, false)
+            for lnum, line in ipairs(lines) do
+                for i, r in ipairs(rulers) do
+                    if vim.fn.strdisplaywidth(line) < r.col then
+                        vim.api.nvim_buf_set_extmark(buf, ruler_ns, top + lnum - 1, #line, {
+                            virt_text = { { " ", "Ruler" .. i } },
+                            virt_text_pos = "overlay",
+                            virt_text_win_col = r.col - 1,
+                            priority = 1,
+                        })
+                    end
+                end
+            end
+        end
+        vim.api.nvim_create_autocmd({ "BufWinEnter", "WinEnter", "WinScrolled", "TextChanged", "TextChangedI" }, {
+            group = vim.api.nvim_create_augroup("Rulers", { clear = true }),
+            callback = draw_rulers,
+        })
+
+        vim.api.nvim_create_user_command("ToggleRulers", function()
+            rulers_enabled = not rulers_enabled
+            print("Setting rulers to: " .. tostring(rulers_enabled))
+            draw_rulers()
+        end, {})
+
         -- diagnostics
         vim.diagnostic.config({
             virtual_text = {
@@ -83,7 +133,7 @@ return {
                     .. "2. Run :DiffOrig to see differences\n"
                     .. "3. Keep or discard based on changes",
                     vim.log.levels.WARN,
-                    { timeout = 10000 }  -- 10 seconds before auto-dismiss
+                    { timeout = 10000 } -- 10 seconds before auto-dismiss
                 )
             end,
         })
