@@ -13,6 +13,9 @@ return {
     vim.api.nvim_create_user_command('ToggleAutoFormat', function()
       format_is_enabled = not format_is_enabled
       print('Setting autoformatting to: ' .. tostring(format_is_enabled))
+      -- Broadcast so other features (e.g. markdown_toc.lua) can mirror this
+      -- toggle without formatting.lua needing to know they exist.
+      vim.api.nvim_exec_autocmds('User', { pattern = 'AutoFormatToggled', data = { enabled = format_is_enabled } })
     end, {})
 
     -- Create an augroup that is used for managing our formatting autocmds.

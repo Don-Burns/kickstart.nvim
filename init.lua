@@ -433,6 +433,8 @@ local servers = {
   },
   jsonls = {},
   cspell_ls = {},
+  -- markdown
+  marksman = {},
 }
 
 -- Blink supports additional completion capabilities, so broadcast them to servers
