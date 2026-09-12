@@ -100,6 +100,65 @@ return {
             vim.cmd([[stopinsert]])
             toggle_terminal()
         end, { desc = "Toggle Terminal" })
+
+        -- Open the file under the cursor (in the last non-terminal window). Reimplemented
+        -- rather than delegating to native gf/gF because those act on the *current*
+        -- window's cursor, and want to read the terminal's cursor/text but open the
+        -- result in a different window.
+        ---@param with_line boolean Whether to parse and jump to a line/column.
+        ---@param target_win integer Window that should open the file.
+        ---@return nil
+        local function goto_file_in_editor_win(with_line, target_win)
+            local line = vim.api.nvim_get_current_line()
+            local file = vim.fn.expand("<cfile>")
+            if file == "" then
+                return
+            end
+            local cfile = vim.fn.expand("<cfile>:p")
+
+            local lnum, col
+            local file_type = vim.filetype.match({ filename = cfile })
+            if with_line then
+                local escaped = vim.pesc(file)
+                local l, c
+                if file_type == "python" then
+                    -- Python traceback: File "path.py", line 2
+                    l, c = line:match(escaped .. [["?%s*,%s*line%s+(%d+)]])
+                else
+                    -- Generic tool output: path.md:2 or path.md:2:10
+                    l, c = line:match(escaped .. ":(%d+):?(%d*)")
+                end
+                if l then
+                    lnum, col = tonumber(l), tonumber(c)
+                end
+            end
+
+
+            if vim.api.nvim_win_is_valid(target_win) then
+                vim.api.nvim_set_current_win(target_win)
+            end
+
+            vim.cmd.edit(vim.fn.fnameescape(cfile))
+            if lnum then
+                vim.api.nvim_win_set_cursor(0, { lnum, (col or 1) - 1 })
+            end
+        end
+
+        vim.api.nvim_create_autocmd("TermOpen", {
+            callback = function(args)
+                if args.buf ~= state.bottom_terminal.buffer_id then
+                    return
+                end
+                vim.keymap.set("n", "gf", function()
+                    goto_file_in_editor_win(false, state.bottom_terminal.last_editor_win)
+                end,
+                    { buffer = args.buf, desc = "[G]oto [F]ile under cursor (in editor win)" })
+                vim.keymap.set("n", "gF", function()
+                    goto_file_in_editor_win(true, state.bottom_terminal.last_editor_win)
+                end,
+                    { buffer = args.buf, desc = "[G]oto [F]ile:line under cursor (in editor win)" })
+            end,
+        })
     end,
     -- binds that rely on plugins so cannot be called before plugin install and other init setup
     setup_plugin_binds = function()
