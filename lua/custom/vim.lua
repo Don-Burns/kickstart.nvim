@@ -15,10 +15,12 @@ return {
         vim.o.scrolloff = 15
 
         -- Set highlight on search
-        vim.o.hlsearch = false
+        vim.o.hlsearch = true
+        vim.o.incsearch = true
 
         -- Make line numbers default
         vim.wo.number = true
+        vim.wo.relativenumber = true
 
         -- Enable mouse mode
         vim.o.mouse = "a"
