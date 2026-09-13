@@ -28,6 +28,21 @@ describe("Project config", function()
         assert.same({ "tests/unit", "-k", "smoke" }, project.get_string_list("test.args"))
     end)
 
+    it("falls back to VS Code pytest settings", function()
+        vim.fn.mkdir(temp_dir .. "/.vscode", "p")
+        vim.fn.writefile({ '{"python.testing.pytestArgs":["tests/vscode","-m","fast"]}' }, temp_dir .. "/.vscode/settings.json")
+
+        assert.same({ "tests/vscode", "-m", "fast" }, project.get_string_list("test.args"))
+    end)
+
+    it("prefers the Neovim config over VS Code settings", function()
+        vim.fn.mkdir(temp_dir .. "/.vscode", "p")
+        vim.fn.writefile({ '{"python.testing.pytestArgs":["tests/vscode"]}' }, temp_dir .. "/.vscode/settings.json")
+        vim.fn.writefile({ '{"test":{"args":["tests/nvim"]}}' }, temp_dir .. "/.nvim/config.json")
+
+        assert.same({ "tests/nvim" }, project.get_string_list("test.args"))
+    end)
+
     it("returns the default for a missing config value", function()
         assert.same({ "tests" }, project.get("test.args", { "tests" }))
     end)

@@ -11,6 +11,15 @@ local loaded_root
 ---@type ProjectConfig|nil
 local loaded_config
 
+local function read_json(path)
+    local ok, config = pcall(vim.json.decode, table.concat(vim.fn.readfile(path), "\n"))
+    if not ok or type(config) ~= "table" then
+        vim.notify("Invalid project config: " .. path, vim.log.levels.WARN, { timeout = 5000 })
+        return {}
+    end
+    return config
+end
+
 --- Return the current project root.
 ---@return string
 function M.root()
@@ -18,6 +27,8 @@ function M.root()
 end
 
 --- Load `.nvim/config.json` for the current project.
+--- Falls back to `.vscode/settings.json` when the Neovim config is absent.
+--- VS Code's `python.testing.pytestArgs` is exposed as `test.args`.
 --- Invalid JSON produces a warning notification and an empty config.
 ---@return ProjectConfig
 function M.config()
@@ -27,20 +38,24 @@ function M.config()
     end
 
     loaded_root = root
-    local path = root .. "/.nvim/config.json"
-    if vim.fn.filereadable(path) ~= 1 then
+    local nvim_path = root .. "/.nvim/config.json"
+    if vim.fn.filereadable(nvim_path) == 1 then
+        loaded_config = read_json(nvim_path)
+        return loaded_config
+    end
+
+    local vscode_path = root .. "/.vscode/settings.json"
+    if vim.fn.filereadable(vscode_path) ~= 1 then
         loaded_config = {}
         return loaded_config
     end
 
-    local ok, config = pcall(vim.json.decode, table.concat(vim.fn.readfile(path), "\n"))
-    if not ok or type(config) ~= "table" then
-        vim.notify("Invalid project config: " .. path, vim.log.levels.WARN, { timeout = 5000 })
-        loaded_config = {}
-        return loaded_config
-    end
-
-    loaded_config = config
+    local settings = read_json(vscode_path)
+    loaded_config = {
+        test = {
+            args = settings["python.testing.pytestArgs"] or {},
+        },
+    }
     return loaded_config
 end
 
