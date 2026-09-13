@@ -10,6 +10,7 @@ It has been heavily modified since then by me.
 --]]
 
 require("custom.vim").apply_options()
+require("custom.project").config()
 -- add binds without plugin dep in case I break config =P
 local keybinds = require("custom.keybinds")
 keybinds.setup_vim_binds()

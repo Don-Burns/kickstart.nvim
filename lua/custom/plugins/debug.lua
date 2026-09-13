@@ -21,7 +21,11 @@ return {
         "nvim-neotest/neotest",
         "antoinemadec/FixCursorHold.nvim",
         ---- Language specific adapters
-        "nvim-neotest/neotest-python",
+        {
+            "nvim-neotest/neotest-python",
+            -- bug in the latest commit (2026-09-13 -> think is due to `51c453d57f8d5156671b42ea57fafa2e1c9fb641`)
+            commit = "cc62d70ae4d3f238ed04dac643d6ddcdad27d9ad",
+        },
     },
     config = function()
         local dap = require "dap"
@@ -60,7 +64,9 @@ return {
         local neotest = require "neotest"
         neotest.setup {
             adapters = {
-                require "neotest-python",
+                require("neotest-python") {
+                    args = { "-vv" },
+                },
             },
         }
 
@@ -74,6 +80,18 @@ return {
             -- don't need to check if open. already checks in open function
             neotest.summary.open()
         end, { desc = "Test: Run current file" })
+        vim.keymap.set("n", "<leader>tp", function()
+            local project = require "custom.project"
+            local root = project.root()
+            local options = project.get_string_list("test.args")
+
+            if #options > 0 then
+                neotest.run.run({ root, extra_args = options })
+            else
+                neotest.run.run(root)
+            end
+            neotest.summary.open()
+        end, { desc = "Test: Run project" })
         -- Also map F23/F24 for convenience on my keyboard 2nd layer
         vim.keymap.set("n", "<F23>", function()
             neotest.run.run({ strategy = "dap" })
