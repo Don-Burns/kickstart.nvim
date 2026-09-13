@@ -150,12 +150,12 @@ return {
                     return
                 end
                 vim.keymap.set("n", "gf", function()
-                    goto_file_in_editor_win(false, state.bottom_terminal.last_editor_win)
-                end,
+                        goto_file_in_editor_win(false, state.bottom_terminal.last_editor_win)
+                    end,
                     { buffer = args.buf, desc = "[G]oto [F]ile under cursor (in editor win)" })
                 vim.keymap.set("n", "gF", function()
-                    goto_file_in_editor_win(true, state.bottom_terminal.last_editor_win)
-                end,
+                        goto_file_in_editor_win(true, state.bottom_terminal.last_editor_win)
+                    end,
                     { buffer = args.buf, desc = "[G]oto [F]ile:line under cursor (in editor win)" })
             end,
         })
@@ -187,7 +187,9 @@ return {
             { "<leader>ri_", hidden = true },
             { "<leader>s",   group = "[S]earch" },
             { "<leader>s_",  hidden = true },
-            { "<leader>t",   group = "[T]oggle" },
+            { "<leader>T",   group = "[T]oggle" },
+            { "<leader>T_",  hidden = true },
+            { "<leader>t",   group = "[T]est" },
             { "<leader>t_",  hidden = true },
         }
         -- register which-key VISUAL mode
@@ -340,7 +342,7 @@ return {
             vim.lsp.buf.format()
         end, { desc = "Format current buffer with LSP" })
         nmap("<leader>lf", "<cmd>:Format<cr>", "[F]ormat Current Buffer")
-        nmap("<leader>tf", "<cmd>:ToggleAutoFormat<cr>", "[T]oggle Auto [F]ormat")
-        nmap("<leader>tr", "<cmd>:ToggleRulers<cr>", "[T]oggle [R]ulers")
+        nmap("<leader>Tf", "<cmd>:ToggleAutoFormat<cr>", "[T]oggle Auto [F]ormat")
+        nmap("<leader>Tr", "<cmd>:ToggleRulers<cr>", "[T]oggle [R]ulers")
     end,
 }

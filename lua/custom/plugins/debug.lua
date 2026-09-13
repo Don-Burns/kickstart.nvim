@@ -3,7 +3,6 @@
 return {
     "mfussenegger/nvim-dap",
     dependencies = {
-        "nvim-neotest/nvim-nio",
         -- Creates a beautiful debugger UI
         "rcarriga/nvim-dap-ui",
 
@@ -11,9 +10,18 @@ return {
         "williamboman/mason.nvim",
         "jay-babu/mason-nvim-dap.nvim",
 
-        -- Add your own debuggers here
+        -- Add language debuggers here
+        -- (For running tests with debugger, see below)
         "leoluz/nvim-dap-go",
         "mfussenegger/nvim-dap-python",
+
+        -- for running tests with debugger
+        ---- Base
+        "nvim-neotest/nvim-nio",
+        "nvim-neotest/neotest",
+        "antoinemadec/FixCursorHold.nvim",
+        ---- Language specific adapters
+        "nvim-neotest/neotest-python",
     },
     config = function()
         local dap = require "dap"
@@ -42,10 +50,47 @@ return {
         vim.keymap.set("n", "<F1>", dap.step_into, { desc = "Debug: Step Into" })
         vim.keymap.set("n", "<F2>", dap.step_over, { desc = "Debug: Step Over" })
         vim.keymap.set("n", "<F3>", dap.step_out, { desc = "Debug: Step Out" })
+        vim.keymap.set("n", "<F7>", dap.close, { desc = "Debug: Stop" })
         vim.keymap.set("n", "<leader>b", dap.toggle_breakpoint, { desc = "Debug: Toggle Breakpoint" })
         vim.keymap.set("n", "<leader>B", function()
             dap.set_breakpoint(vim.fn.input "Breakpoint condition: ")
         end, { desc = "Debug: Set Breakpoint" })
+
+        -- Testing keymaps
+        local neotest = require "neotest"
+        neotest.setup {
+            adapters = {
+                require "neotest-python",
+            },
+        }
+
+        vim.keymap.set("n", "<leader>tt", function()
+            neotest.run.run({ strategy = "dap" })
+            -- don't need to check if open. already checks in open function
+            neotest.summary.open()
+        end, { desc = "Test: Run nearest test" })
+        vim.keymap.set("n", "<leader>tf", function()
+            neotest.run.run(vim.fn.expand "%")
+            -- don't need to check if open. already checks in open function
+            neotest.summary.open()
+        end, { desc = "Test: Run current file" })
+        -- Also map F23/F24 for convenience on my keyboard 2nd layer
+        vim.keymap.set("n", "<F23>", function()
+            neotest.run.run({ strategy = "dap" })
+            -- don't need to check if open. already checks in open function
+            neotest.summary.open()
+        end, { desc = "Test: Run nearest test" })
+        vim.keymap.set("n", "<F24>", function()
+            neotest.run.run(vim.fn.expand "%")
+            -- don't need to check if open. already checks in open function
+            neotest.summary.open()
+        end, { desc = "Test: Run current file" })
+        vim.keymap.set("n", "<leader>ts", function()
+            neotest.summary.toggle()
+        end, { desc = "Test: Toggle summary" })
+        vim.keymap.set("n", "<leader>tw", function()
+            neotest.watch.watch(vim.fn.expand "%")
+        end, { desc = "Test: Watch" })
 
         -- Dap UI setup
         -- For more information, see |:help nvim-dap-ui|
@@ -79,6 +124,8 @@ return {
         -- Install golang specific config
         require("dap-go").setup()
         -- Python config
-        require("dap-python").setup()
+        -- pass uv so debugpy is injected into the run command.
+        -- This is needed for neotest to work with dap.
+        require("dap-python").setup("uv")
     end,
 }
