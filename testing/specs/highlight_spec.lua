@@ -128,3 +128,91 @@ describe("Python template brace highlighting", function()
         )
     end)
 end)
+
+describe("Python embedded SQL highlighting", function()
+    local function sql_injection_languages(bufnr)
+        local parser = vim.treesitter.get_parser(bufnr, "python")
+        local tree = parser:parse()[1]
+        local query = vim.treesitter.query.get("python", "injections")
+        local injections = {}
+        for capture_id in query:iter_captures(tree:root(), bufnr) do
+            if query.captures[capture_id] == "injection.content" then
+                table.insert(injections, "sql")
+            end
+        end
+        return injections
+    end
+
+    it("injects SQL in the embedded SQL sample", function()
+        local test_file = helpers.get_testing_path() .. "/codesamples/test.py"
+        vim.cmd("edit " .. test_file)
+        local bufnr = vim.api.nvim_get_current_buf()
+        vim.wait(200)
+
+        local languages = sql_injection_languages(bufnr)
+        assert.is_true(vim.tbl_contains(languages, "sql"), "Expected a SQL injection in test.py: " .. vim.inspect(languages))
+    end)
+
+    it("requires a SQL statement after leading comments", function()
+        local tmp_file = vim.fn.tempname() .. ".py"
+        vim.fn.writefile({
+            'comment_only = """\\',
+            "-- this is not SQL",
+            '"""',
+            'sql = """\\',
+            "-- this is a SQL comment",
+            "SELECT 1",
+            '"""',
+        }, tmp_file)
+        vim.cmd("edit " .. tmp_file)
+        local bufnr = vim.api.nvim_get_current_buf()
+        vim.wait(200)
+
+        local languages = sql_injection_languages(bufnr)
+        assert.is_true(vim.tbl_contains(languages, "sql"), "Expected the comment-prefixed SQL string to match")
+        vim.cmd("bdelete!")
+        vim.fn.delete(tmp_file)
+    end)
+
+    it("injects SQL in f-strings", function()
+        local bufnr
+        bufnr, tmp_file = open_python_buffer({
+            'sql = f"SELECT * FROM users WHERE id = {user_id}"',
+        })
+
+        local languages = sql_injection_languages(bufnr)
+        assert.is_true(vim.tbl_contains(languages, "sql"), "Expected SQL injection in an f-string")
+    end)
+
+    it("injects SQL statements beyond SELECT", function()
+        local bufnr = open_python_buffer({
+            'sql = "UPDATE users SET name = \'Ada\'"',
+        })
+
+        local languages = sql_injection_languages(bufnr)
+        assert.is_true(vim.tbl_contains(languages, "sql"), "Expected SQL injection in an UPDATE string")
+    end)
+
+    it("injects SQL after an unescaped multiline string start", function()
+        local bufnr = open_python_buffer({
+            'sql = """',
+            "    UPDATE users SET name = 'Ada'",
+            '"""',
+        })
+
+        local languages = sql_injection_languages(bufnr)
+        assert.is_true(vim.tbl_contains(languages, "sql"), "Expected SQL injection after the opening newline")
+    end)
+
+    it("injects an escaped-newline SQL string", function()
+        local test_file = helpers.get_testing_path() .. "/codesamples/test.py"
+        vim.cmd("edit " .. test_file)
+        local bufnr = vim.api.nvim_get_current_buf()
+        vim.wait(200)
+
+        assert.is_true(
+            vim.tbl_contains(sql_injection_languages(bufnr), "sql"),
+            "Expected escaped-newline SQL content to be injected"
+        )
+    end)
+end)

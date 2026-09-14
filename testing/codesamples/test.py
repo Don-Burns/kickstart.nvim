@@ -22,6 +22,43 @@ def main() -> int:
         hello {variable}"
         {dictionary}
     """
+
+    ###########################
+    # sql embedded highlight testing
+    _embedded_single_line_sql = "SELECT * FROM table WHERE column = {variable}"
+    _embedded_single_line_sql = "UPDATE table SET column = {variable}"
+    _embedded_multi_line_sql = """\
+        SELECT * FROM table
+        WHERE column = {variable}
+    """
+    _embedded_multi_line_sql_with_no_first_line_escape = """
+        UPDATE table
+        SET a=1
+        WHERE column = {variable} -- this is a comment
+    """
+    _embedded_multi_line_sql_with_no_first_line_escape = """
+        SELECT * FROM table
+        WHERE column = {variable}
+    """
+    _embedded_multi_line_sql_with_comment_on_first_line = """\
+        -- this is a comment
+        SELECT * FROM table
+    """
+    _embedded_multi_line_sql_with_comment_on_first_line = """\
+        -- this is a comment
+        UPDATE table
+        SET a=1
+        WHERE column = {variable} -- this is a comment
+    """
+    _embedded_multi_line_sql_with_f_string = f"""\
+        -- this is a comment
+        SELECT * FROM table WHERE val = {variable}
+    """
+    _non_sql_string = """
+        help me SELECT an option
+    """
+    ###########################
+
     template_string = "hello {{variable}}"
     mult_line_template_string = """\
         hello {variable}"

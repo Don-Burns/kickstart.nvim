@@ -108,6 +108,8 @@ return {
             },
         })
         theme.load()
+        vim.api.nvim_set_hl(0, "@keyword.sql", { fg = "#5DADE2" })
+        vim.api.nvim_set_hl(0, "@string.sql", { fg = "#5DADE2" })
 
         -- Highlight {content} inside plain Python strings blue (f-strings are
         -- left alone, they already get their own `interpolation` highlighting).

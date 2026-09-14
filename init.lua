@@ -309,8 +309,8 @@ vim.keymap.set("n", "<leader>sr", require("telescope.builtin").resume, { desc = 
 -- NOTE: You can also specify a branch or a specific commit
 vim.defer_fn(
   function()
-    local parsers = { "c", "cpp", "go", "lua", "python", "rust", "tsx", "javascript", "typescript", "vimdoc", "vim",
-      "bash" }
+    local parsers = { "c", "cpp", "go", "lua", "python", "rust", "sql", "tsx", "javascript", "typescript", "vimdoc",
+      "vim", "bash" }
     --   require('nvim-treesitter').install(parsers)
 
     ---@param buf integer
