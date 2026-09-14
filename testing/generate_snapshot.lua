@@ -1,6 +1,8 @@
 -- Script to generate the initial diagnostics snapshot
 -- Run with: nvim --headless -l testing/generate_snapshot.lua
 
+local helpers = require("testing.helpers")
+
 -- Wait for startup and plugins to load
 vim.wait(3000)
 
@@ -53,34 +55,14 @@ vim.wait(15000)
 local diagnostics = vim.diagnostic.get(bufnr)
 print("Total diagnostics: " .. #diagnostics)
 
--- Format them
-local severity_map = {
-    [1] = "Error",
-    [2] = "Warning",
-    [3] = "Info",
-    [4] = "Hint",
-}
-local lines = {}
-for _, d in ipairs(diagnostics) do
-    local line = string.format(
-        "%d:%d [%s] %s (%s)",
-        d.lnum + 1,
-        d.col + 1,
-        severity_map[d.severity] or "Unknown",
-        d.message:gsub("\n", " "),
-        d.source or "unknown"
-    )
-    table.insert(lines, line)
-end
-table.sort(lines)
-
+-- Format them using the same formatter as the snapshot test.
+local content = helpers.format_diagnostics(diagnostics)
 -- Write snapshot
 local snapshot_dir = vim.fn.stdpath("config") .. "/testing/snapshots"
 vim.fn.mkdir(snapshot_dir, "p")
 local snapshot_path = snapshot_dir .. "/test_py_diagnostics.txt"
 local file = io.open(snapshot_path, "w")
 if file then
-    local content = table.concat(lines, "\n") .. "\n"
     file:write(content)
     file:close()
     print("Snapshot written to: " .. snapshot_path)

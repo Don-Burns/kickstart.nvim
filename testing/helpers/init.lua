@@ -75,6 +75,16 @@ end
 ---@param diagnostics table[] list of vim.Diagnostic objects
 ---@return string formatted text with one diagnostic per line
 function M.format_diagnostics(diagnostics)
+    table.sort(diagnostics, function(a, b)
+        if a.lnum ~= b.lnum then
+            return a.lnum < b.lnum
+        end
+        if a.col ~= b.col then
+            return a.col < b.col
+        end
+        return (a.source or "") .. a.message < (b.source or "") .. b.message
+    end)
+
     local lines = {}
     for _, d in ipairs(diagnostics) do
         local line = string.format(
@@ -87,8 +97,6 @@ function M.format_diagnostics(diagnostics)
         )
         table.insert(lines, line)
     end
-    -- Sort by line number, then column, for stable output
-    table.sort(lines)
     return table.concat(lines, "\n") .. "\n"
 end
 
