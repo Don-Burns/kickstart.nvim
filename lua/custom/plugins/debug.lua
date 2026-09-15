@@ -97,6 +97,10 @@ return {
             end
             neotest.summary.open()
         end, { desc = "Test: Run project" })
+        vim.keymap.set("n", "<leader>tl", function()
+            neotest.run.run_last()
+            neotest.summary.open()
+        end, { desc = "Test: Run last" })
         -- Also map F23/F24 for convenience on my keyboard 2nd layer
         vim.keymap.set("n", "<F24>", function()
             neotest.run.run({ strategy = "dap" })
