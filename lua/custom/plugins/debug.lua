@@ -66,6 +66,11 @@ return {
             adapters = {
                 require("neotest-python") {
                     args = { "-vv" },
+                    dap = {
+                        -- Workaround for debugpy's Python 3.12+ sys.monitoring bug:
+                        -- https://github.com/microsoft/debugpy/issues/1970
+                        env = { PYDEVD_USE_SYS_MONITORING = "0" },
+                    },
                 },
             },
         }
