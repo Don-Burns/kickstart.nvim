@@ -124,7 +124,10 @@ return {
                 if file_type == "python" then
                     -- Python traceback: File "path.py", line 2
                     l, c = line:match(escaped .. [["?%s*,%s*line%s+(%d+)]])
-                else
+                end
+                -- python also has the format <file>:<row number> e.g. in pytest errors
+                -- possibly other langs too, so fall back to standard format
+                if c == nil then
                     -- Generic tool output: path.md:2 or path.md:2:10
                     l, c = line:match(escaped .. ":(%d+):?(%d*)")
                 end
