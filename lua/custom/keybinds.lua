@@ -31,6 +31,9 @@ return {
 
         -- File save
         vim.keymap.set("n", "<leader>w", "<cmd>w<cr>", { desc = "Save file" })
+        vim.keymap.set("n", "<M-z>", function()
+            vim.wo.wrap = not vim.wo.wrap
+        end, { desc = "Toggle line wrapping" })
 
 
         -- Buffer/Panel handling
