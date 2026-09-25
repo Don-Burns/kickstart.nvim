@@ -253,7 +253,18 @@ return {
         vim.keymap.set("n", "<leader>/", comment_line, { desc = "Toggle comment line" })
         -- vim.keymap.set('n', '<C-/>', comment_line, { desc = 'Toggle comment line' })
 
-        vim.keymap.set("n", "<leader>go", "<cmd>:.GBrowse<cr>", { desc = "[G]it [O]pen file line on remote" })
+        vim.keymap.set("n", "<leader>go", function()
+            vim.fn.execute(".GBrowse!")
+            local url = vim.fn.getreg("+")
+            if url == "" then
+                vim.notify("Unable to determine remote URL", vim.log.levels.ERROR)
+                return
+            end
+            local ok, err = vim.ui.open(url)
+            if not ok then
+                vim.notify(err or "Unable to open URL", vim.log.levels.ERROR)
+            end
+        end, { desc = "[G]it [O]pen file line on remote" })
 
         -- Todo keymaps
         vim.keymap.set("n", "<leader>pt", "<cmd>TodoTelescope<cr>", { desc = "[P]roject [T]odo List" })
