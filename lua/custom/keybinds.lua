@@ -253,6 +253,8 @@ return {
         vim.keymap.set("n", "<leader>/", comment_line, { desc = "Toggle comment line" })
         -- vim.keymap.set('n', '<C-/>', comment_line, { desc = 'Toggle comment line' })
 
+        vim.keymap.set("n", "<leader>go", "<cmd>:.GBrowse<cr>", { desc = "[G]it [O]pen file line on remote" })
+
         -- Todo keymaps
         vim.keymap.set("n", "<leader>pt", "<cmd>TodoTelescope<cr>", { desc = "[P]roject [T]odo List" })
 
