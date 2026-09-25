@@ -63,6 +63,11 @@ return {
         -- Testing keymaps
         local neotest = require "neotest"
         neotest.setup {
+            discovery = {
+                filter_dir = function(name)
+                    return name ~= "cdk.out"
+                end,
+            },
             adapters = {
                 require("neotest-python") {
                     args = { "-vv" },
