@@ -86,6 +86,7 @@ return {
                     style = "minimal",
                 })
                 state.bottom_terminal.window_id = window
+                vim.cmd("wincmd J")
                 vim.cmd.terminal()
 
                 -- Activate venv if .venv exists in current directory
