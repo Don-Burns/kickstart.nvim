@@ -396,8 +396,9 @@ local servers = {
   -- python
   -- ruff doesn't give docs on hover or code completion so use zuban for that
   zuban = {
-    --@type lspconfig.settings.zuban
-    settings = {}
+    init_options = {
+      typeCheckingMode = "mypy",
+    },
   },
   ruff = {
     -- on_attach = function(client, _)
