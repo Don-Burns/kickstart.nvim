@@ -247,7 +247,7 @@ return {
 
         { "<leader>ar", "<cmd>Atlas review<cr>",      desc = "Review PR" },
         { "<leader>aP", "<cmd>Atlas pulls<cr>",       desc = "Atlas Pull Requests List" },
-        { "<leader>ac", "<cmd>Atlas pipelines<cr>",   desc = "View CI" },
+        { "<leader>ac", "<cmd>Atlas pipelines .<cr>", desc = "View CI for current branch" },
         { "<leader>aC", "<cmd>Atlas create<cr>",      desc = "Make issue or PR" },
         { "<leader>aj", "<cmd>Atlas search jira<cr>", desc = "Search Jira" },
     },
